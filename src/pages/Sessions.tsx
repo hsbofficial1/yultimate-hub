@@ -6,7 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, MapPin, Users, ArrowLeft, Plus } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, ArrowLeft } from 'lucide-react';
+import { CreateSessionDialog } from '@/components/CreateSessionDialog';
 
 interface Session {
   id: string;
@@ -74,12 +75,7 @@ const Sessions = () => {
               <h1 className="text-2xl font-bold">Training Sessions</h1>
             </div>
           </div>
-          {canManage && (
-            <Button onClick={() => toast({ title: 'Feature coming soon!' })}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Session
-            </Button>
-          )}
+          {canManage && <CreateSessionDialog onSuccess={fetchSessions} />}
         </div>
       </header>
 
@@ -96,12 +92,7 @@ const Sessions = () => {
               <p className="text-muted-foreground mb-4">
                 Create your first training session
               </p>
-              {canManage && (
-                <Button onClick={() => toast({ title: 'Feature coming soon!' })}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Session
-                </Button>
-              )}
+              {canManage && <CreateSessionDialog onSuccess={fetchSessions} />}
             </CardContent>
           </Card>
         ) : (

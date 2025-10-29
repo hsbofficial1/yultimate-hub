@@ -4,9 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, ArrowLeft, Plus, UserCircle } from 'lucide-react';
+import { Users, ArrowLeft, UserCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { CreateChildDialog } from '@/components/CreateChildDialog';
 
 interface Child {
   id: string;
@@ -67,10 +68,7 @@ const Children = () => {
               <h1 className="text-2xl font-bold">Children Profiles</h1>
             </div>
           </div>
-          <Button onClick={() => toast({ title: 'Feature coming soon!' })}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Child
-          </Button>
+          <CreateChildDialog onSuccess={fetchChildren} />
         </div>
       </header>
 
@@ -87,10 +85,7 @@ const Children = () => {
               <p className="text-muted-foreground mb-4">
                 Start adding children to your coaching program!
               </p>
-              <Button onClick={() => toast({ title: 'Feature coming soon!' })}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add First Child
-              </Button>
+              <CreateChildDialog onSuccess={fetchChildren} />
             </CardContent>
           </Card>
         ) : (
