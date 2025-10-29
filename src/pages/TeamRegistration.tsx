@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -92,14 +92,17 @@ const TeamRegistration = () => {
 
       if (teamError || !team) throw teamError || new Error('Failed to create team');
 
-      const playersWithTeam = players.map((player) => ({
-        ...player,
-        team_id: team.id,
+      const playersWithTeam: { name: string; email: string; age: number; gender: string; team_id: string }[] = players.map((player) => ({
+        name: player.name,
+        email: player.email,
+        age: player.age,
+        gender: player.gender,
+        team_id: team.id as string,
       }));
 
       const { error: playersError } = await supabase
         .from('team_players')
-        .insert(playersWithTeam);
+        .insert(playersWithTeam as any);
 
       if (playersError) throw playersError;
 

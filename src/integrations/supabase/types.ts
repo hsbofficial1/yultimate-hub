@@ -14,16 +14,472 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      attendance: {
+        Row: {
+          child_id: string
+          id: string
+          marked_at: string
+          present: boolean
+          session_id: string
+          synced: boolean
+        }
+        Insert: {
+          child_id: string
+          id?: string
+          marked_at?: string
+          present: boolean
+          session_id: string
+          synced?: boolean
+        }
+        Update: {
+          child_id?: string
+          id?: string
+          marked_at?: string
+          present?: boolean
+          session_id?: string
+          synced?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      children: {
+        Row: {
+          active: boolean
+          age: number
+          community: string | null
+          created_at: string
+          gender: string
+          id: string
+          join_date: string
+          medical_notes: string | null
+          name: string
+          parent_name: string
+          parent_phone: string
+          parent_whatsapp: string | null
+          photo_url: string | null
+          school: string | null
+        }
+        Insert: {
+          active?: boolean
+          age: number
+          community?: string | null
+          created_at?: string
+          gender: string
+          id?: string
+          join_date?: string
+          medical_notes?: string | null
+          name: string
+          parent_name: string
+          parent_phone: string
+          parent_whatsapp?: string | null
+          photo_url?: string | null
+          school?: string | null
+        }
+        Update: {
+          active?: boolean
+          age?: number
+          community?: string | null
+          created_at?: string
+          gender?: string
+          id?: string
+          join_date?: string
+          medical_notes?: string | null
+          name?: string
+          parent_name?: string
+          parent_phone?: string
+          parent_whatsapp?: string | null
+          photo_url?: string | null
+          school?: string | null
+        }
+        Relationships: []
+      }
+      matches: {
+        Row: {
+          field: string
+          id: string
+          notes: string | null
+          scheduled_time: string
+          status: string
+          team_a_id: string
+          team_a_score: number
+          team_b_id: string
+          team_b_score: number
+          tournament_id: string
+          updated_at: string
+        }
+        Insert: {
+          field: string
+          id?: string
+          notes?: string | null
+          scheduled_time: string
+          status?: string
+          team_a_id: string
+          team_a_score?: number
+          team_b_id: string
+          team_b_score?: number
+          tournament_id: string
+          updated_at?: string
+        }
+        Update: {
+          field?: string
+          id?: string
+          notes?: string | null
+          scheduled_time?: string
+          status?: string
+          team_a_id?: string
+          team_a_score?: number
+          team_b_id?: string
+          team_b_score?: number
+          tournament_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_team_a_id_fkey"
+            columns: ["team_a_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_team_b_id_fkey"
+            columns: ["team_b_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      sessions: {
+        Row: {
+          coach_id: string
+          created_at: string
+          date: string
+          id: string
+          location: string
+          notes: string | null
+          program_type: string
+          time: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          date: string
+          id?: string
+          location: string
+          notes?: string | null
+          program_type: string
+          time: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          date?: string
+          id?: string
+          location?: string
+          notes?: string | null
+          program_type?: string
+          time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spirit_scores: {
+        Row: {
+          attitude: number
+          comments: string | null
+          communication: number
+          fairness: number
+          fouls: number
+          from_team_id: string
+          id: string
+          match_id: string
+          rules: number
+          submitted_at: string
+          to_team_id: string
+          total: number | null
+        }
+        Insert: {
+          attitude: number
+          comments?: string | null
+          communication: number
+          fairness: number
+          fouls: number
+          from_team_id: string
+          id?: string
+          match_id: string
+          rules: number
+          submitted_at?: string
+          to_team_id: string
+          total?: number | null
+        }
+        Update: {
+          attitude?: number
+          comments?: string | null
+          communication?: number
+          fairness?: number
+          fouls?: number
+          from_team_id?: string
+          id?: string
+          match_id?: string
+          rules?: number
+          submitted_at?: string
+          to_team_id?: string
+          total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spirit_scores_from_team_id_fkey"
+            columns: ["from_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spirit_scores_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spirit_scores_to_team_id_fkey"
+            columns: ["to_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_players: {
+        Row: {
+          age: number
+          email: string
+          gender: string
+          id: string
+          name: string
+          team_id: string
+        }
+        Insert: {
+          age: number
+          email: string
+          gender: string
+          id?: string
+          name: string
+          team_id: string
+        }
+        Update: {
+          age?: number
+          email?: string
+          gender?: string
+          id?: string
+          name?: string
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_players_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          captain_id: string
+          created_at: string
+          email: string
+          id: string
+          logo_url: string | null
+          name: string
+          phone: string
+          status: string
+          tournament_id: string
+        }
+        Insert: {
+          captain_id: string
+          created_at?: string
+          email: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          phone: string
+          status?: string
+          tournament_id: string
+        }
+        Update: {
+          captain_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          phone?: string
+          status?: string
+          tournament_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          created_at: string
+          created_by: string
+          end_date: string
+          id: string
+          location: string
+          max_teams: number
+          name: string
+          start_date: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          end_date: string
+          id?: string
+          location: string
+          max_teams?: number
+          name: string
+          start_date: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          end_date?: string
+          id?: string
+          location?: string
+          max_teams?: number
+          name?: string
+          start_date?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournaments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_roles: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["user_role"][]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["user_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role:
+        | "admin"
+        | "tournament_director"
+        | "team_captain"
+        | "player"
+        | "coach"
+        | "program_manager"
+        | "volunteer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +606,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: [
+        "admin",
+        "tournament_director",
+        "team_captain",
+        "player",
+        "coach",
+        "program_manager",
+        "volunteer",
+      ],
+    },
   },
 } as const
