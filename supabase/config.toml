@@ -1,1 +1,6 @@
 project_id = "febvczcdqmpmvhcrkahj"
+
+[auth]
+# Disable email confirmation requirement
+enable_signup = true
+enable_confirmations = false
