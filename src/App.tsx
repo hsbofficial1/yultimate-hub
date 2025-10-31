@@ -16,6 +16,7 @@ import Children from "./pages/Children";
 import Sessions from "./pages/Sessions";
 import SessionAttendanceEnhanced from "./pages/SessionAttendanceEnhanced";
 import Leaderboards from "./pages/Leaderboards";
+import StreakLeaderboardPage from "./pages/StreakLeaderboardPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,14 @@ const App = () => (
             <Route
               path="/tournament/:tournamentId/leaderboards"
               element={<Leaderboards />}
+            />
+            <Route
+              path="/streak-leaderboard"
+              element={
+                <ProtectedRoute>
+                  <StreakLeaderboardPage />
+                </ProtectedRoute>
+              }
             />
             <Route
               path="/reports"

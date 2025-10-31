@@ -14,6 +14,82 @@ export type Database = {
   }
   public: {
     Tables: {
+      attendance_badges: {
+        Row: {
+          id: string
+          child_id: string
+          badge_type: string
+          milestone_sessions: number
+          earned_at: string
+          notified: boolean
+          notified_at: string | null
+        }
+        Insert: {
+          id?: string
+          child_id: string
+          badge_type: string
+          milestone_sessions: number
+          earned_at?: string
+          notified?: boolean
+          notified_at?: string | null
+        }
+        Update: {
+          id?: string
+          child_id?: string
+          badge_type?: string
+          milestone_sessions?: number
+          earned_at?: string
+          notified?: boolean
+          notified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_badges_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      attendance_streaks: {
+        Row: {
+          id: string
+          child_id: string
+          current_streak: number
+          longest_streak: number
+          last_session_date: string | null
+          streak_started_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          child_id: string
+          current_streak?: number
+          longest_streak?: number
+          last_session_date?: string | null
+          streak_started_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          child_id?: string
+          current_streak?: number
+          longest_streak?: number
+          last_session_date?: string | null
+          streak_started_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_streaks_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       absence_alerts: {
         Row: {
           id: string

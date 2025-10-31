@@ -31,6 +31,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Upload, X, User, Phone, MessageCircle, School, Heart, History } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+<<<<<<< Updated upstream
+=======
+import { AttendanceHistoryTimeline } from './AttendanceHistoryTimeline';
+import { ChildBadges } from './ChildBadges';
+>>>>>>> Stashed changes
 
 const childSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
@@ -305,8 +310,9 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
           <div className="text-center py-8">Loading...</div>
         ) : (
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="badges">Badges</TabsTrigger>
               <TabsTrigger value="programs">Programs</TabsTrigger>
               <TabsTrigger value="history">History</TabsTrigger>
             </TabsList>
@@ -595,6 +601,12 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
                   </div>
                 </form>
               </Form>
+            </TabsContent>
+
+            <TabsContent value="badges" className="space-y-4">
+              {childId && (
+                <ChildBadges childId={childId} showStreakInfo={true} />
+              )}
             </TabsContent>
 
             <TabsContent value="programs" className="space-y-4">
