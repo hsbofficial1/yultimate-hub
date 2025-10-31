@@ -9,8 +9,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Upload, X } from 'lucide-react';
 
 const playerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -20,9 +21,11 @@ const playerSchema = z.object({
 });
 
 const teamSchema = z.object({
+  captain_name: z.string().min(2, 'Captain name must be at least 2 characters'),
   name: z.string().min(3, 'Team name must be at least 3 characters'),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+  previous_experience: z.string().optional(),
 });
 
 type PlayerFormData = z.infer<typeof playerSchema>;
@@ -35,13 +38,18 @@ const TeamRegistration = () => {
   const { toast } = useToast();
   const [players, setPlayers] = useState<PlayerFormData[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const teamForm = useForm<TeamFormData>({
     resolver: zodResolver(teamSchema),
     defaultValues: {
+      captain_name: '',
       name: '',
       email: user?.email || '',
       phone: '',
+      previous_experience: '',
     },
   });
 
@@ -56,9 +64,52 @@ const TeamRegistration = () => {
   });
 
   const addPlayer = (data: PlayerFormData) => {
+    if (players.length >= 15) {
+      toast({
+        title: 'Maximum 15 players allowed',
+        description: 'Remove a player to add another',
+        variant: 'destructive',
+      });
+      return;
+    }
     setPlayers([...players, data]);
     playerForm.reset();
     toast({ title: 'Player added to roster' });
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: 'Invalid file type',
+          description: 'Please upload an image file',
+          variant: 'destructive',
+        });
+        return;
+      }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: 'File too large',
+          description: 'Logo must be less than 5MB',
+          variant: 'destructive',
+        });
+        return;
+      }
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
   };
 
   const removePlayer = (index: number) => {
@@ -77,14 +128,57 @@ const TeamRegistration = () => {
 
     setSubmitting(true);
     try {
+      // Check for duplicate team name in tournament
+      const { data: existingTeams } = await supabase
+        .from('teams')
+        .select('name')
+        .eq('tournament_id', tournamentId)
+        .ilike('name', data.name);
+
+      if (existingTeams && existingTeams.length > 0) {
+        throw new Error('A team with this name already exists in this tournament');
+      }
+
+      let logoUrl: string | null = null;
+
+      // Upload logo if provided
+      if (logoFile) {
+        setUploadingLogo(true);
+        const fileExt = logoFile.name.split('.').pop();
+        const fileName = `${user?.id}_${Date.now()}.${fileExt}`;
+        const filePath = `team-logos/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('team-assets')
+          .upload(filePath, logoFile);
+
+        if (uploadError) {
+          console.error('Logo upload error:', uploadError);
+          toast({
+            title: 'Logo upload failed',
+            description: 'Continuing without logo',
+            variant: 'default',
+          });
+        } else {
+          const { data: urlData } = supabase.storage
+            .from('team-assets')
+            .getPublicUrl(filePath);
+          logoUrl = urlData.publicUrl;
+        }
+        setUploadingLogo(false);
+      }
+
       const { data: team, error: teamError } = await supabase
         .from('teams')
         .insert({
           tournament_id: tournamentId,
           captain_id: user?.id,
+          captain_name: data.captain_name,
           name: data.name,
           email: data.email,
           phone: data.phone,
+          previous_experience: data.previous_experience || null,
+          logo_url: logoUrl,
           status: 'pending',
         })
         .select()
@@ -108,7 +202,7 @@ const TeamRegistration = () => {
 
       toast({
         title: 'Team registered successfully!',
-        description: 'Your team is pending approval',
+        description: 'Your team is pending approval. A confirmation email has been sent.',
       });
 
       navigate(`/tournament/${tournamentId}`);
@@ -147,6 +241,19 @@ const TeamRegistration = () => {
             <CardContent>
               <Form {...teamForm}>
                 <form className="space-y-4">
+                  <FormField
+                    control={teamForm.control}
+                    name="captain_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Captain Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={teamForm.control}
                     name="name"
@@ -188,6 +295,58 @@ const TeamRegistration = () => {
                       )}
                     />
                   </div>
+                  <FormField
+                    control={teamForm.control}
+                    name="previous_experience"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Previous Tournament Experience (Optional)</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="List any tournaments your team has participated in, achievements, etc."
+                            className="min-h-[80px]"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="space-y-2">
+                    <FormLabel>Team Logo (Optional)</FormLabel>
+                    <div className="flex items-center gap-4">
+                      {logoPreview ? (
+                        <div className="relative">
+                          <img src={logoPreview} alt="Logo preview" className="h-20 w-20 object-cover rounded-lg border" />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                            onClick={removeLogo}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <label className="flex flex-col items-center justify-center w-20 h-20 border-2 border-dashed rounded-lg cursor-pointer hover:bg-accent">
+                          <Upload className="h-6 w-6 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground mt-1">Upload</span>
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleLogoChange}
+                          />
+                        </label>
+                      )}
+                      {!logoPreview && (
+                        <p className="text-sm text-muted-foreground">
+                          JPG, PNG, or GIF. Max 5MB
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </form>
               </Form>
             </CardContent>
@@ -197,7 +356,7 @@ const TeamRegistration = () => {
           <Card>
             <CardHeader>
               <CardTitle>Add Players</CardTitle>
-              <CardDescription>Add at least 7 players to your roster</CardDescription>
+              <CardDescription>Add 7-15 players to your roster</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...playerForm}>
@@ -267,10 +426,15 @@ const TeamRegistration = () => {
                       )}
                     />
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full" disabled={players.length >= 15}>
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Player to Roster
+                    {players.length >= 15 ? 'Maximum Players Reached' : 'Add Player to Roster'}
                   </Button>
+                  {players.length >= 15 && (
+                    <p className="text-sm text-muted-foreground text-center">
+                      You've reached the maximum of 15 players
+                    </p>
+                  )}
                 </form>
               </Form>
             </CardContent>
@@ -281,6 +445,9 @@ const TeamRegistration = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Team Roster ({players.length} players)</CardTitle>
+                <CardDescription>
+                  {players.length < 7 ? `${7 - players.length} more required` : players.length >= 15 ? 'Maximum reached' : `${15 - players.length} more allowed`}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -314,9 +481,9 @@ const TeamRegistration = () => {
             size="lg"
             className="w-full"
             onClick={teamForm.handleSubmit(submitTeam)}
-            disabled={submitting || players.length < 7}
+            disabled={submitting || players.length < 7 || uploadingLogo}
           >
-            {submitting ? 'Submitting...' : 'Register Team'}
+            {submitting ? 'Submitting...' : uploadingLogo ? 'Uploading Logo...' : 'Register Team'}
           </Button>
         </div>
       </main>

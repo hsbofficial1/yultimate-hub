@@ -1,8 +1,83 @@
-# Welcome to your Lovable project
+# Y-ULTIMATE Hub - Ultimate Frisbee Tournament Management System
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/d5d2efc1-ba10-4d0c-8997-098e50671091
+
+## Features
+
+### 1.1 Team Registration System ✓
+
+A comprehensive public registration form with the following features:
+
+- **Team Details**:
+  - Team name (validated for uniqueness per tournament)
+  - Captain name
+  - Contact email
+  - Phone number
+  - Previous tournament experience (optional)
+  - Team logo upload (optional, max 5MB)
+
+- **Player Management**:
+  - Add 7-15 players per team
+  - Player information: name, age (10-100), gender, email
+  - Real-time roster validation
+
+- **Automatic Validations**:
+  - Duplicate team names per tournament
+  - Age limits (10-100 years)
+  - Roster size (minimum 7, maximum 15 players)
+  - File type and size validation for logos
+
+- **Email Confirmation**:
+  - Automatic email sent upon registration
+  - Database trigger for email notifications
+
+- **Status Tracking**:
+  - Pending → Approved → Registered
+  - Rejection flow available for administrators
+
+## Database Setup
+
+Run the migrations in order:
+
+```bash
+# Apply the team registration enhancements
+supabase migration up
+
+# Or manually run the migration file
+psql <your_database_url> -f supabase/migrations/20250102000000_team_registration_enhancements.sql
+```
+
+This migration will:
+- Add `captain_name` and `previous_experience` fields to the teams table
+- Update status constraints to include 'registered'
+- Create email trigger for registration confirmations
+- Add unique constraint for team names per tournament
+- Create storage bucket for team logos
+- Set up storage policies for public access
+
+## Storage Bucket
+
+The system uses a Supabase storage bucket named `team-assets` for storing team logos. The bucket is:
+- Public (anyone can view)
+- Restricted to authenticated users for uploads
+- Limited to 5MB file size
+- Supports: JPEG, JPG, PNG, GIF, WEBP formats
+
+## Email Configuration
+
+**Note**: The email trigger is currently a placeholder. To implement actual email sending:
+
+1. Set up Supabase Edge Functions for email sending
+2. Or integrate with an external service (SendGrid, AWS SES, etc.)
+3. Update the `send_team_registration_email()` function in the migration
+
+Example using Supabase Edge Functions:
+```typescript
+// supabase/functions/send-registration-email/index.ts
+// Implement email sending logic here
+```
 
 ## How can I edit this code?
 
