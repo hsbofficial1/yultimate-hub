@@ -74,25 +74,69 @@ A comprehensive team management interface with the following features:
   - Clear visual indicators for waitlist status
   - Integration with approval workflow
 
+### 1.3 Match Scheduling System ✓
+
+A comprehensive scheduling system with the following features:
+
+- **Bracket Generation**:
+  - Auto-generate Round Robin brackets
+  - Single Elimination tournament brackets
+  - Double Elimination tournament brackets
+  - Pool-based tournament brackets
+  - Automatic seeding and bracket positioning
+
+- **Schedule Management**:
+  - Multi-field scheduling with automatic field rotation
+  - Time slot management with match duration and break time settings
+  - Configurable start and end times per tournament
+  - Pool assignments for pool-based tournaments
+
+- **Conflict Detection**:
+  - Automatic detection of back-to-back matches for same teams
+  - Warning system for scheduling conflicts
+  - Conflict resolution suggestions
+  - Database function for real-time conflict checking
+
+- **Export Functionality**:
+  - Export to CSV format for Excel compatibility
+  - Export to iCal format for calendar applications
+  - Export to HTML format for web viewing
+  - Timestamped filenames
+
+- **Tournament Settings**:
+  - Customizable bracket types per tournament
+  - Configurable match duration and break times
+  - Multiple field support
+  - Flexible time windows
+  - Pool configuration
+
 ## Database Setup
 
 Run the migrations in order:
 
 ```bash
-# Apply the team registration enhancements
+# Apply all migrations
 supabase migration up
 
-# Or manually run the migration file
+# Or manually run the migration files
 psql <your_database_url> -f supabase/migrations/20250102000000_team_registration_enhancements.sql
+psql <your_database_url> -f supabase/migrations/20250103000000_match_scheduling_system.sql
 ```
 
-This migration will:
+Migration 1 (Team Registration):
 - Add `captain_name` and `previous_experience` fields to the teams table
 - Update status constraints to include 'registered'
 - Create email trigger for registration confirmations
 - Add unique constraint for team names per tournament
 - Create storage bucket for team logos
 - Set up storage policies for public access
+
+Migration 2 (Match Scheduling):
+- Create `tournament_settings` table for bracket configuration
+- Add pool, round, and bracket position fields to matches
+- Create indexes for performance optimization
+- Add conflict detection database function
+- Add timestamp update triggers
 
 ## Storage Bucket
 
