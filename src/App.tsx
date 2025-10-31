@@ -19,6 +19,9 @@ import SessionAttendance from "./pages/SessionAttendance";
 =======
 import Leaderboards from "./pages/Leaderboards";
 import TournamentReports from "./pages/TournamentReports";
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 import NotFound from "./pages/NotFound";
 
@@ -84,6 +87,9 @@ const App = () => (
               element={<TournamentReports />}
             />
             <Route
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
               path="/reports"
               element={

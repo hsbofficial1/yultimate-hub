@@ -246,6 +246,9 @@ Comprehensive tournament reporting and analytics with the following features:
   - Accessible at `/tournament/:id/reports`
   - Shareable tournament insights
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 ## Database Setup
 

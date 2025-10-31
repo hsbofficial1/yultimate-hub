@@ -14,7 +14,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus, Globe, Loader2, Download, CheckCircle2, XCircle, FileText, Filter } from 'lucide-react';
+=======
+import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus, Globe, Loader2, Download, CheckCircle2, XCircle, FileText, Filter, Trophy, BarChart3 } from 'lucide-react';
+>>>>>>> Stashed changes
 =======
 import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus, Globe, Loader2, Download, CheckCircle2, XCircle, FileText, Filter, Trophy, BarChart3 } from 'lucide-react';
 >>>>>>> Stashed changes
@@ -407,6 +411,9 @@ const TournamentDetail = () => {
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Reports
               </Button>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
               <Badge className="font-bold uppercase tracking-wide">{tournament.status.replace('_', ' ')}</Badge>
               {canManage && tournament.status === 'draft' && (
