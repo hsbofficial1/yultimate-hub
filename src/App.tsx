@@ -14,7 +14,7 @@ import TeamRegistration from "./pages/TeamRegistration";
 import Reports from "./pages/Reports";
 import Children from "./pages/Children";
 import Sessions from "./pages/Sessions";
-import SessionAttendance from "./pages/SessionAttendance";
+import SessionAttendanceEnhanced from "./pages/SessionAttendanceEnhanced";
 import Leaderboards from "./pages/Leaderboards";
 import NotFound from "./pages/NotFound";
 
@@ -101,7 +101,7 @@ const App = () => (
               path="/session/:id"
               element={
                 <ProtectedRoute>
-                  <SessionAttendance />
+                  <SessionAttendanceEnhanced />
                 </ProtectedRoute>
               }
             />

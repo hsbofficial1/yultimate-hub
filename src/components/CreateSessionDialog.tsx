@@ -47,7 +47,7 @@ export const CreateSessionDialog = ({ onSuccess }: { onSuccess?: () => void }) =
       date: '',
       time: '',
       location: '',
-      program_type: 'training',
+      program_type: 'school',
       notes: '',
     },
   });
@@ -153,11 +153,8 @@ export const CreateSessionDialog = ({ onSuccess }: { onSuccess?: () => void }) =
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       {...field}
                     >
-                      <option value="training">Training Session</option>
-                      <option value="workshop">Workshop</option>
-                      <option value="tournament_prep">Tournament Prep</option>
-                      <option value="fun_game">Fun Game</option>
-                      <option value="assessment">Assessment</option>
+                      <option value="school">School Program</option>
+                      <option value="community">Community Program</option>
                     </select>
                   </FormControl>
                   <FormMessage />
