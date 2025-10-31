@@ -102,22 +102,22 @@ const Tournaments = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/8 via-secondary/6 to-accent/6 grass-texture">
-      <header className="border-b-2 border-primary/30 bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-md">
-        <div className="container mx-auto px-4 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="hover:bg-primary/10 border border-border/50">
-              <ArrowLeft className="h-5 w-5" />
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border bg-card sticky top-0 z-10 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+              <ArrowLeft className="h-4 w-4" />
             </Button>
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center border-2 border-primary/30">
-                <Trophy className="h-6 w-6 text-primary" />
+              <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
+                <Trophy className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                <h1 className="text-xl font-semibold">
                   Tournaments
                 </h1>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <p className="text-xs text-muted-foreground">
                   Competition Hub
                 </p>
               </div>
@@ -129,20 +129,20 @@ const Tournaments = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-10">
+      <main className="container mx-auto px-6 py-12">
         {loading ? (
           <div className="text-center py-16">
             <Activity className="h-12 w-12 mx-auto mb-4 text-primary animate-spin" />
-            <p className="text-lg font-semibold text-muted-foreground uppercase tracking-wide">Loading tournaments...</p>
+            <p className="text-base font-medium text-muted-foreground">Loading tournaments...</p>
           </div>
         ) : tournaments.length === 0 ? (
-          <Card className="text-center py-16 border-2 border-primary/30 bg-card/95 backdrop-blur-sm shadow-xl">
+          <Card className="text-center py-16">
             <CardContent className="pt-16">
-              <div className="h-20 w-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/30">
+              <div className="h-20 w-20 mx-auto mb-6 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Trophy className="h-10 w-10 text-primary/50" />
               </div>
-              <h3 className="text-2xl font-black uppercase tracking-wide mb-3">No tournaments yet</h3>
-              <p className="text-muted-foreground font-semibold mb-6 max-w-md mx-auto">
+              <h3 className="text-2xl font-semibold mb-3">No tournaments yet</h3>
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 Be the first to create a tournament and get the competition started!
               </p>
               {(userRole === 'admin' || userRole === 'tournament_director') && (
@@ -152,37 +152,37 @@ const Tournaments = () => {
           </Card>
         ) : (
           <div>
-            <h2 className="text-2xl font-black mb-6 uppercase tracking-wider text-foreground/90">All Tournaments</h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <h2 className="text-2xl font-semibold mb-6">All Tournaments</h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {tournaments.map((tournament) => (
                 <Card 
                   key={tournament.id}
-                  className="hover:shadow-2xl transition-all duration-300 cursor-pointer hover:scale-[1.02] border-2 border-primary/20 hover:border-primary/50 bg-card/95 backdrop-blur-sm shadow-lg group"
+                  className="hover:shadow-md transition-shadow duration-200 cursor-pointer border border-border bg-card group"
                   onClick={() => navigate(`/tournament/${tournament.id}`)}
                 >
                   <CardHeader>
-                    <div className="flex items-start justify-between mb-3">
-                      <CardTitle className="text-xl font-black uppercase tracking-wide flex-1 pr-2 group-hover:text-primary transition-colors">
+                    <div className="flex items-start justify-between mb-2">
+                      <CardTitle className="text-lg font-semibold flex-1 pr-2">
                         {tournament.name}
                       </CardTitle>
                       <Badge 
                         variant={getStatusColor(tournament.status)} 
-                        className="font-bold uppercase tracking-wide text-xs px-2 py-1 flex-shrink-0"
+                        className="text-xs flex-shrink-0"
                       >
                         {getStatusLabel(tournament.status)}
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Calendar className="h-4 w-4 text-primary" />
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="h-3.5 w-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-bold text-foreground">
+                        <p className="font-medium text-foreground">
                           {new Date(tournament.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </p>
-                        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">
+                        <p className="text-xs text-muted-foreground">
                           {new Date(tournament.start_date).toLocaleDateString('en-US', { year: 'numeric' })}
                         </p>
                       </div>
@@ -190,44 +190,43 @@ const Tournaments = () => {
                         <>
                           <span className="text-muted-foreground">→</span>
                           <div>
-                            <p className="font-bold text-foreground">
+                            <p className="font-medium text-foreground">
                               {new Date(tournament.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </p>
-                            <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">
+                            <p className="text-xs text-muted-foreground">
                               {new Date(tournament.end_date).toLocaleDateString('en-US', { year: 'numeric' })}
                             </p>
                           </div>
                         </>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="h-8 w-8 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
-                        <MapPin className="h-4 w-4 text-secondary" />
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="h-7 w-7 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
+                        <MapPin className="h-3.5 w-3.5 text-secondary" />
                       </div>
-                      <div>
-                        <p className="font-bold text-foreground uppercase tracking-wide">{tournament.location}</p>
-                      </div>
+                      <p className="font-medium text-foreground">{tournament.location}</p>
                     </div>
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                        <Users className="h-4 w-4 text-accent" />
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="h-7 w-7 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
+                        <Users className="h-3.5 w-3.5 text-secondary" />
                       </div>
                       <div>
-                        <p className="font-bold text-foreground">
+                        <p className="font-medium text-foreground">
                           Max {tournament.max_teams} teams
                         </p>
-                        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">
+                        <p className="text-xs text-muted-foreground">
                           Team limit
                         </p>
                       </div>
                     </div>
-                    <div className="pt-3 border-t border-border/50 mt-4 space-y-3">
+                    <div className="pt-2 border-t mt-3 space-y-2">
                       {canManage && tournament.status === 'draft' && (
                         <Button
                           size="sm"
                           onClick={(e) => publishTournament(tournament.id, e)}
                           disabled={publishingId === tournament.id}
-                          className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                          className="w-full"
+                          variant="outline"
                         >
                           {publishingId === tournament.id ? (
                             <>
@@ -237,16 +236,14 @@ const Tournaments = () => {
                           ) : (
                             <>
                               <Globe className="h-3 w-3 mr-2" />
-                              Publish Now
+                              Publish
                             </>
                           )}
                         </Button>
                       )}
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">View Details</span>
-                        <div className="h-6 w-6 rounded-full bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                          <span className="text-xs font-black text-primary">→</span>
-                        </div>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>View Details</span>
+                        <span>→</span>
                       </div>
                     </div>
                   </CardContent>

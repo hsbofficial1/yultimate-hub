@@ -33,6 +33,8 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { AttendanceHistoryTimeline } from './AttendanceHistoryTimeline';
 import { ChildBadges } from './ChildBadges';
+import { HomeVisitTimeline } from './HomeVisitTimeline';
+import { LSASProgressChart } from './LSASProgressChart';
 
 const childSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
@@ -307,9 +309,11 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
           <div className="text-center py-8">Loading...</div>
         ) : (
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="badges">Badges</TabsTrigger>
+              <TabsTrigger value="visits">Home Visits</TabsTrigger>
+              <TabsTrigger value="assessments">LSAS</TabsTrigger>
               <TabsTrigger value="programs">Programs</TabsTrigger>
               <TabsTrigger value="history">History</TabsTrigger>
             </TabsList>
@@ -603,6 +607,24 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
             <TabsContent value="badges" className="space-y-4">
               {childId && (
                 <ChildBadges childId={childId} showStreakInfo={true} />
+              )}
+            </TabsContent>
+
+            <TabsContent value="visits" className="space-y-4">
+              {childId && (
+                <HomeVisitTimeline
+                  childId={childId}
+                  childName={form.watch('name') || childData?.name || ''}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="assessments" className="space-y-4">
+              {childId && (
+                <LSASProgressChart
+                  childId={childId}
+                  childName={form.watch('name') || childData?.name || ''}
+                />
               )}
             </TabsContent>
 

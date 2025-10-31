@@ -62,57 +62,49 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/10 grass-texture">
-      {/* Decorative elements */}
-      <div className="absolute inset-0 field-lines opacity-30"></div>
-      <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-primary/10 blur-3xl"></div>
-      <div className="absolute bottom-20 right-20 w-40 h-40 rounded-full bg-secondary/10 blur-3xl"></div>
-      
-      <Card className="w-full max-w-md shadow-2xl border-2 border-primary/30 relative z-10 backdrop-blur-sm bg-card/95">
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-          <div className="bg-primary rounded-full p-3 shadow-lg border-4 border-background">
-            <Trophy className="h-8 w-8 text-primary-foreground" />
-          </div>
-        </div>
-        
-        <CardContent className="pt-12 pb-6">
-          <div className="text-center mb-6">
-            <h1 className="text-4xl font-black tracking-tight mb-2 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              Y-ULTIMATE
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <Card className="w-full max-w-md shadow-lg border border-border bg-card">
+        <CardContent className="pt-8 pb-6">
+          <div className="flex flex-col items-center mb-8">
+            <div className="h-14 w-14 rounded-lg bg-primary flex items-center justify-center mb-4">
+              <Trophy className="h-7 w-7 text-white" />
+            </div>
+            <h1 className="text-2xl font-semibold mb-2">
+              Y-Ultimate
             </h1>
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              Ultimate Frisbee Hub
+            <p className="text-sm text-muted-foreground">
+              Tournament & Coaching Management
             </p>
           </div>
 
           <Tabs value={isLogin ? 'login' : 'signup'} onValueChange={(v) => setIsLogin(v === 'login')} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6 bg-muted/50">
-              <TabsTrigger value="login" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-semibold">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="login" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 Sign In
               </TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-semibold">
-                Join Up
+              <TabsTrigger value="signup" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                Sign Up
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="login" className="space-y-4 mt-0">
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold uppercase tracking-wide">
+                  <Label htmlFor="email" className="text-sm font-medium">
                     Email
                   </Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="your.email@example.com"
+                    placeholder="Email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-11 border-2 focus:border-primary transition-colors"
+                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-semibold uppercase tracking-wide">
+                  <Label htmlFor="password" className="text-sm font-medium">
                     Password
                   </Label>
                   <Input
@@ -122,80 +114,77 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-11 border-2 focus:border-primary transition-colors"
+                    className="h-10"
                   />
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full h-12 text-base font-bold uppercase tracking-wide bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all"
+                  className="w-full h-10"
                   disabled={loading}
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
                       <Activity className="h-4 w-4 animate-spin" />
-                      Getting you in...
+                      Signing in...
                     </span>
                   ) : (
-                    <span className="flex items-center gap-2">
-                      <Zap className="h-4 w-4" />
-                      Let's Go
-                    </span>
+                    'Sign In'
                   )}
                 </Button>
               </form>
             </TabsContent>
 
             <TabsContent value="signup" className="space-y-4 mt-0">
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name" className="text-sm font-semibold uppercase tracking-wide">
+                  <Label htmlFor="signup-name" className="text-sm font-medium">
                     Full Name
                   </Label>
                   <Input
                     id="signup-name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="h-11 border-2 focus:border-primary transition-colors"
+                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="text-sm font-semibold uppercase tracking-wide">
+                  <Label htmlFor="signup-email" className="text-sm font-medium">
                     Email
                   </Label>
                   <Input
                     id="signup-email"
                     type="email"
-                    placeholder="your.email@example.com"
+                    placeholder="Email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-11 border-2 focus:border-primary transition-colors"
+                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password" className="text-sm font-semibold uppercase tracking-wide">
+                  <Label htmlFor="signup-password" className="text-sm font-medium">
                     Password
                   </Label>
                   <Input
                     id="signup-password"
                     type="password"
-                    placeholder="Create a strong password"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="h-11 border-2 focus:border-primary transition-colors"
+                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="role" className="text-sm font-semibold uppercase tracking-wide">
-                    I'm a...
+                  <Label htmlFor="role" className="text-sm font-medium">
+                    Role
                   </Label>
                   <Select value={role} onValueChange={setRole}>
-                    <SelectTrigger className="h-11 border-2 focus:border-primary transition-colors">
+                    <SelectTrigger className="h-10">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -209,7 +198,7 @@ const Auth = () => {
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full h-12 text-base font-bold uppercase tracking-wide bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all"
+                  className="w-full h-10"
                   disabled={loading}
                 >
                   {loading ? (
@@ -218,19 +207,16 @@ const Auth = () => {
                       Creating account...
                     </span>
                   ) : (
-                    <span className="flex items-center gap-2">
-                      <Trophy className="h-4 w-4" />
-                      Join The Team
-                    </span>
+                    'Create Account'
                   )}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
 
-          <div className="mt-6 pt-6 border-t border-border/50">
+          <div className="mt-6 pt-4 border-t">
             <p className="text-xs text-center text-muted-foreground">
-              By continuing, you agree to our terms of service and community guidelines.
+              By continuing, you agree to our terms of service.
             </p>
           </div>
         </CardContent>
