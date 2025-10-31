@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      absence_alerts: {
+        Row: {
+          id: string
+          child_id: string
+          session_id: string | null
+          consecutive_absences: number
+          alert_type: string
+          message: string | null
+          created_at: string
+          acknowledged: boolean
+          acknowledged_by: string | null
+          acknowledged_at: string | null
+          resolved: boolean
+          resolved_by: string | null
+          resolved_at: string | null
+        }
+        Insert: {
+          id?: string
+          child_id: string
+          session_id?: string | null
+          consecutive_absences?: number
+          alert_type?: string
+          message?: string | null
+          created_at?: string
+          acknowledged?: boolean
+          acknowledged_by?: string | null
+          acknowledged_at?: string | null
+          resolved?: boolean
+          resolved_by?: string | null
+          resolved_at?: string | null
+        }
+        Update: {
+          id?: string
+          child_id?: string
+          session_id?: string | null
+          consecutive_absences?: number
+          alert_type?: string
+          message?: string | null
+          created_at?: string
+          acknowledged?: boolean
+          acknowledged_by?: string | null
+          acknowledged_at?: string | null
+          resolved?: boolean
+          resolved_by?: string | null
+          resolved_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "absence_alerts_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "absence_alerts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attendance: {
         Row: {
           child_id: string

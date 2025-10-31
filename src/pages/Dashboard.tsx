@@ -4,8 +4,9 @@ import { supabase } from '@/lib/supabaseClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Users, Calendar, BarChart3, LogOut, UserCircle2, Baby, CalendarDays, Target, Award, Activity } from 'lucide-react';
+import { Trophy, Users, Calendar, BarChart3, LogOut, UserCircle2, Baby, CalendarDays, Target, Award, Activity, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AbsenceAlerts } from '@/components/AbsenceAlerts';
 
 const Dashboard = () => {
   const { user, userRole, signOut } = useAuth();
@@ -238,6 +239,17 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
+
+            {/* Absence Alerts Section */}
+            {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
+              <div>
+                <h2 className="text-2xl font-black mb-6 uppercase tracking-wider text-foreground/90 flex items-center gap-2">
+                  <AlertTriangle className="h-6 w-6 text-destructive" />
+                  Absence Alerts
+                </h2>
+                <AbsenceAlerts limit={5} />
+              </div>
+            )}
 
             {/* Welcome Card */}
             <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 backdrop-blur-sm shadow-xl">
