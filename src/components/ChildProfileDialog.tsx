@@ -31,15 +31,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Upload, X, User, Phone, MessageCircle, School, Heart, History } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-<<<<<<< Updated upstream
-=======
-import { AttendanceHistoryTimeline } from './AttendanceHistoryTimeline';
+
+
 import { ChildBadges } from './ChildBadges';
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
+
+
 import { HomeVisitTimeline } from './HomeVisitTimeline';
->>>>>>> Stashed changes
+
 
 const childSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
