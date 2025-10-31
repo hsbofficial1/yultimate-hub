@@ -63,16 +63,21 @@ const Sessions = () => {
   const canManage = userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border bg-card sticky top-0 z-10 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold">Training Sessions</h1>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
+                <Calendar className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold">Training Sessions</h1>
+                <p className="text-xs text-muted-foreground">Schedule management</p>
+              </div>
             </div>
           </div>
           {canManage && <CreateSessionDialog onSuccess={fetchSessions} />}

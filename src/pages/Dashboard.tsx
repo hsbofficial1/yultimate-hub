@@ -48,115 +48,112 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/8 via-secondary/6 to-accent/6 grass-texture">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b-2 border-primary/30 bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-md">
-        <div className="container mx-auto px-4 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg border-2 border-background transform rotate-3 hover:rotate-6 transition-transform">
-                <Trophy className="h-7 w-7 text-white" />
-              </div>
-              <div className="absolute -top-1 -right-1 h-4 w-4 bg-accent rounded-full border-2 border-background"></div>
+      <header className="border-b border-border bg-card sticky top-0 z-10 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
+              <Trophy className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Y-ULTIMATE
+              <h1 className="text-xl font-semibold text-foreground">
+                Y-Ultimate
               </h1>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Ultimate Frisbee Hub
+              <p className="text-xs text-muted-foreground">
+                Ultimate Frisbee Management
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-muted/50 border border-border/50">
-              <UserCircle2 className="h-5 w-5 text-muted-foreground" />
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-muted/30">
+              <UserCircle2 className="h-4 w-4 text-muted-foreground" />
               <div className="text-right">
-                <p className="text-sm font-bold">{user?.email}</p>
-                <Badge variant="secondary" className="text-xs font-semibold uppercase">{userRole?.replace('_', ' ')}</Badge>
+                <p className="text-xs font-medium">{user?.email}</p>
+                <Badge variant="outline" className="text-xs">{userRole?.replace('_', ' ')}</Badge>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive border border-border/50">
-              <LogOut className="h-5 w-5" />
+            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-muted-foreground hover:text-foreground">
+              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-10">
+      <main className="container mx-auto px-6 py-12">
         {loading ? (
           <div className="text-center py-16">
             <Activity className="h-12 w-12 mx-auto mb-4 text-primary animate-spin" />
-            <p className="text-lg font-semibold text-muted-foreground">Loading stats...</p>
+            <p className="text-base font-medium text-muted-foreground">Loading stats...</p>
           </div>
         ) : (
-          <div className="space-y-10">
+          <div className="space-y-8">
             {/* Stats Grid */}
             <div>
-              <h2 className="text-2xl font-black mb-6 uppercase tracking-wider text-foreground/90">The Scoreboard</h2>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <h2 className="text-2xl font-semibold mb-6 text-foreground">Overview</h2>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card 
-                  className="hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 border-l-4 border-l-primary bg-card/95 backdrop-blur-sm shadow-lg group"
+                  className="hover:shadow-md transition-shadow duration-200 cursor-pointer border border-border bg-card group"
                   onClick={() => navigate('/tournaments')}
                 >
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                    <CardTitle className="text-sm font-bold uppercase tracking-wide">Tournaments</CardTitle>
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                      <Trophy className="h-5 w-5 text-primary" />
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-base font-medium text-muted-foreground">Tournaments</CardTitle>
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                      <Trophy className="h-4 w-4 text-primary" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-4xl font-black text-primary mb-1">{tournamentCount}</div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Active comps</p>
+                    <div className="text-3xl font-semibold text-foreground mb-1">{tournamentCount}</div>
+                    <p className="text-xs text-muted-foreground">Active competitions</p>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 border-l-4 border-l-secondary bg-card/95 backdrop-blur-sm shadow-lg group"
+                  className="hover:shadow-md transition-shadow duration-200 cursor-pointer border border-border bg-card group"
                   onClick={() => navigate('/tournaments')}
                 >
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                    <CardTitle className="text-sm font-bold uppercase tracking-wide">Teams</CardTitle>
-                    <div className="h-10 w-10 rounded-lg bg-secondary/10 group-hover:bg-secondary/20 flex items-center justify-center transition-colors">
-                      <Target className="h-5 w-5 text-secondary" />
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-base font-medium text-muted-foreground">Teams</CardTitle>
+                    <div className="h-9 w-9 rounded-lg bg-secondary/10 group-hover:bg-secondary/20 flex items-center justify-center transition-colors">
+                      <Target className="h-4 w-4 text-secondary" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-4xl font-black text-secondary mb-1">{teamCount}</div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Registered</p>
+                    <div className="text-3xl font-semibold text-foreground mb-1">{teamCount}</div>
+                    <p className="text-xs text-muted-foreground">Registered teams</p>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 border-l-4 border-l-accent bg-card/95 backdrop-blur-sm shadow-lg group"
+                  className="hover:shadow-md transition-shadow duration-200 cursor-pointer border border-border bg-card group"
                   onClick={() => navigate('/tournaments')}
                 >
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                    <CardTitle className="text-sm font-bold uppercase tracking-wide">Matches</CardTitle>
-                    <div className="h-10 w-10 rounded-lg bg-accent/10 group-hover:bg-accent/20 flex items-center justify-center transition-colors">
-                      <Award className="h-5 w-5 text-accent" />
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-base font-medium text-muted-foreground">Matches</CardTitle>
+                    <div className="h-9 w-9 rounded-lg bg-secondary/10 group-hover:bg-secondary/20 flex items-center justify-center transition-colors">
+                      <Award className="h-4 w-4 text-secondary" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-4xl font-black text-accent mb-1">{matchCount}</div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Total games</p>
+                    <div className="text-3xl font-semibold text-foreground mb-1">{matchCount}</div>
+                    <p className="text-xs text-muted-foreground">Total games</p>
                   </CardContent>
                 </Card>
 
                 {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
                   <Card 
-                    className="hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 border-l-4 border-l-primary bg-card/95 backdrop-blur-sm shadow-lg group"
+                    className="hover:shadow-md transition-shadow duration-200 cursor-pointer border border-border bg-card group"
                     onClick={() => navigate('/children')}
                   >
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                      <CardTitle className="text-sm font-bold uppercase tracking-wide">Players</CardTitle>
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                        <Baby className="h-5 w-5 text-primary" />
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-base font-medium text-muted-foreground">Players</CardTitle>
+                      <div className="h-9 w-9 rounded-lg bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <Baby className="h-4 w-4 text-primary" />
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-4xl font-black text-primary mb-1">{childrenCount}</div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Active</p>
+                      <div className="text-3xl font-semibold text-foreground mb-1">{childrenCount}</div>
+                      <p className="text-xs text-muted-foreground">Active players</p>
                     </CardContent>
                   </Card>
                 )}
@@ -165,20 +162,20 @@ const Dashboard = () => {
 
             {/* Quick Actions */}
             <div>
-              <h2 className="text-2xl font-black mb-6 uppercase tracking-wider text-foreground/90">Quick Access</h2>
-              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              <h2 className="text-2xl font-semibold mb-6 text-foreground">Quick Access</h2>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card 
-                  className="hover:shadow-xl transition-all duration-300 cursor-pointer group border-2 border-primary/20 hover:border-primary/50 bg-card/95 backdrop-blur-sm shadow-md"
+                  className="hover:shadow-md transition-shadow duration-200 cursor-pointer group border border-border bg-card"
                   onClick={() => navigate('/tournaments')}
                 >
                   <CardHeader>
-                    <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center border-2 border-primary/30">
-                        <Trophy className="h-7 w-7 text-primary" />
+                    <div className="flex items-center gap-3">
+                      <div className="h-11 w-11 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center">
+                        <Trophy className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <CardTitle className="text-lg font-black uppercase tracking-wide mb-1">Tournaments</CardTitle>
-                        <CardDescription className="text-xs font-semibold uppercase">Browse & manage</CardDescription>
+                        <CardTitle className="text-base font-semibold mb-0.5">Tournaments</CardTitle>
+                        <CardDescription className="text-xs">Browse & manage</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
@@ -187,51 +184,51 @@ const Dashboard = () => {
                 {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
                   <>
                     <Card 
-                      className="hover:shadow-xl transition-all duration-300 cursor-pointer group border-2 border-secondary/20 hover:border-secondary/50 bg-card/95 backdrop-blur-sm shadow-md"
+                      className="hover:shadow-md transition-shadow duration-200 cursor-pointer group border border-border bg-card"
                       onClick={() => navigate('/children')}
                     >
                       <CardHeader>
-                        <div className="flex items-center gap-4">
-                          <div className="h-14 w-14 rounded-xl bg-secondary/10 group-hover:bg-secondary/20 transition-colors flex items-center justify-center border-2 border-secondary/30">
-                            <Baby className="h-7 w-7 text-secondary" />
+                        <div className="flex items-center gap-3">
+                          <div className="h-11 w-11 rounded-lg bg-secondary/10 group-hover:bg-secondary/20 transition-colors flex items-center justify-center">
+                            <Baby className="h-5 w-5 text-secondary" />
                           </div>
                           <div className="flex-1">
-                            <CardTitle className="text-lg font-black uppercase tracking-wide mb-1">Players</CardTitle>
-                            <CardDescription className="text-xs font-semibold uppercase">Manage participants</CardDescription>
+                            <CardTitle className="text-base font-semibold mb-0.5">Players</CardTitle>
+                            <CardDescription className="text-xs">Manage participants</CardDescription>
                           </div>
                         </div>
                       </CardHeader>
                     </Card>
 
                     <Card 
-                      className="hover:shadow-xl transition-all duration-300 cursor-pointer group border-2 border-accent/20 hover:border-accent/50 bg-card/95 backdrop-blur-sm shadow-md"
+                      className="hover:shadow-md transition-shadow duration-200 cursor-pointer group border border-border bg-card"
                       onClick={() => navigate('/sessions')}
                     >
                       <CardHeader>
-                        <div className="flex items-center gap-4">
-                          <div className="h-14 w-14 rounded-xl bg-accent/10 group-hover:bg-accent/20 transition-colors flex items-center justify-center border-2 border-accent/30">
-                            <CalendarDays className="h-7 w-7 text-accent" />
+                        <div className="flex items-center gap-3">
+                          <div className="h-11 w-11 rounded-lg bg-secondary/10 group-hover:bg-secondary/20 transition-colors flex items-center justify-center">
+                            <CalendarDays className="h-5 w-5 text-secondary" />
                           </div>
                           <div className="flex-1">
-                            <CardTitle className="text-lg font-black uppercase tracking-wide mb-1">Sessions</CardTitle>
-                            <CardDescription className="text-xs font-semibold uppercase">Schedule & track</CardDescription>
+                            <CardTitle className="text-base font-semibold mb-0.5">Sessions</CardTitle>
+                            <CardDescription className="text-xs">Schedule & track</CardDescription>
                           </div>
                         </div>
                       </CardHeader>
                     </Card>
 
                     <Card 
-                      className="hover:shadow-xl transition-all duration-300 cursor-pointer group border-2 border-primary/20 hover:border-primary/50 bg-card/95 backdrop-blur-sm shadow-md"
+                      className="hover:shadow-md transition-shadow duration-200 cursor-pointer group border border-border bg-card"
                       onClick={() => navigate('/reports')}
                     >
                       <CardHeader>
-                        <div className="flex items-center gap-4">
-                          <div className="h-14 w-14 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center border-2 border-primary/30">
-                            <BarChart3 className="h-7 w-7 text-primary" />
+                        <div className="flex items-center gap-3">
+                          <div className="h-11 w-11 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors flex items-center justify-center">
+                            <BarChart3 className="h-5 w-5 text-primary" />
                           </div>
                           <div className="flex-1">
-                            <CardTitle className="text-lg font-black uppercase tracking-wide mb-1">Reports</CardTitle>
-                            <CardDescription className="text-xs font-semibold uppercase">Analytics & insights</CardDescription>
+                            <CardTitle className="text-base font-semibold mb-0.5">Reports</CardTitle>
+                            <CardDescription className="text-xs">Analytics & insights</CardDescription>
                           </div>
                         </div>
                       </CardHeader>
@@ -245,8 +242,8 @@ const Dashboard = () => {
             {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-black uppercase tracking-wider text-foreground/90 flex items-center gap-2">
-                    <Sparkles className="h-6 w-6 text-primary" />
+                  <h2 className="text-2xl font-semibold flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
                     Streak Leaderboard
                   </h2>
                   <Button
@@ -254,7 +251,7 @@ const Dashboard = () => {
                     size="sm"
                     onClick={() => navigate('/streak-leaderboard')}
                   >
-                    View Full Leaderboard
+                    View All
                   </Button>
                 </div>
                 <StreakLeaderboard limit={5} />
@@ -264,8 +261,8 @@ const Dashboard = () => {
             {/* Absence Alerts Section */}
             {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
               <div>
-                <h2 className="text-2xl font-black mb-6 uppercase tracking-wider text-foreground/90 flex items-center gap-2">
-                  <AlertTriangle className="h-6 w-6 text-destructive" />
+                <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
                   Absence Alerts
                 </h2>
                 <AbsenceAlerts limit={5} />
@@ -273,10 +270,10 @@ const Dashboard = () => {
             )}
 
             {/* Welcome Card */}
-            <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 backdrop-blur-sm shadow-xl">
+            <Card className="border border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-2xl font-black uppercase tracking-wide mb-2">Welcome Back, {user?.email?.split('@')[0]}!</CardTitle>
-                <CardDescription className="text-base font-semibold">
+                <CardTitle className="text-xl font-semibold mb-2">Welcome Back, {user?.email?.split('@')[0]}!</CardTitle>
+                <CardDescription>
                   {userRole === 'admin' && 'You have full administrative access to the platform.'}
                   {userRole === 'tournament_director' && 'Manage tournaments, teams, and match schedules.'}
                   {userRole === 'coach' && 'Track your sessions and monitor attendance.'}
@@ -286,29 +283,29 @@ const Dashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-start gap-4 p-5 rounded-xl bg-card/80 border-2 border-primary/20 shadow-inner">
-                  <Users className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
+                <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border">
+                  <Users className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-black uppercase tracking-wide mb-2 text-lg">Platform Features</h4>
-                    <ul className="text-sm font-semibold text-muted-foreground space-y-2">
+                    <h4 className="font-semibold mb-2">Platform Features</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1.5">
                       <li className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                        <span className="h-1 w-1 rounded-full bg-primary"></span>
                         Create and manage ultimate frisbee tournaments
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-secondary"></span>
+                        <span className="h-1 w-1 rounded-full bg-secondary"></span>
                         Register teams and track player rosters
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-accent"></span>
+                        <span className="h-1 w-1 rounded-full bg-secondary"></span>
                         Live match scoring and spirit score tracking
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                        <span className="h-1 w-1 rounded-full bg-primary"></span>
                         Youth program management and attendance tracking
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-secondary"></span>
+                        <span className="h-1 w-1 rounded-full bg-secondary"></span>
                         Comprehensive analytics and reporting
                       </li>
                     </ul>
