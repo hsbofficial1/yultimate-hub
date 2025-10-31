@@ -8,6 +8,7 @@ import { Trophy, Users, Calendar, BarChart3, LogOut, UserCircle2, Baby, Calendar
 import { useNavigate } from 'react-router-dom';
 import { AbsenceAlerts } from '@/components/AbsenceAlerts';
 import { StreakLeaderboard } from '@/components/StreakLeaderboard';
+import { OverdueVisitAlerts } from '@/components/OverdueVisitAlerts';
 
 const Dashboard = () => {
   const { user, userRole, signOut } = useAuth();
@@ -258,6 +259,17 @@ const Dashboard = () => {
                   </Button>
                 </div>
                 <StreakLeaderboard limit={5} />
+              </div>
+            )}
+
+            {/* Overdue Visit Alerts Section */}
+            {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
+              <div>
+                <h2 className="text-2xl font-black mb-6 uppercase tracking-wider text-foreground/90 flex items-center gap-2">
+                  <AlertTriangle className="h-6 w-6 text-orange-500" />
+                  Overdue Visit Alerts
+                </h2>
+                <OverdueVisitAlerts limit={5} />
               </div>
             )}
 

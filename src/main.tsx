@@ -4,6 +4,7 @@ import "./index.css";
 import { attendanceSync } from "./lib/attendanceSync";
 import { offlineStorage } from "./lib/offlineStorage";
 import { milestoneNotifications } from "./lib/milestoneNotifications";
+import "./lib/overdueVisitChecker"; // Initialize overdue visit checker
 
 // Initialize offline storage and sync service
 offlineStorage.init().then(() => {

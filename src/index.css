@@ -126,3 +126,17 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* React Quill Editor Styles */
+.ql-editor {
+  min-height: 150px;
+}
+
+.ql-container {
+  font-size: 14px;
+}
+
+.ql-editor.ql-blank::before {
+  color: hsl(var(--muted-foreground));
+  font-style: normal;
+}

@@ -90,6 +90,148 @@ export type Database = {
           },
         ]
       }
+      home_visit_photos: {
+        Row: {
+          id: string
+          visit_id: string
+          photo_url: string
+          caption: string | null
+          uploaded_at: string
+        }
+        Insert: {
+          id?: string
+          visit_id: string
+          photo_url: string
+          caption?: string | null
+          uploaded_at?: string
+        }
+        Update: {
+          id?: string
+          visit_id?: string
+          photo_url?: string
+          caption?: string | null
+          uploaded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_visit_photos_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "home_visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_visits: {
+        Row: {
+          id: string
+          child_id: string
+          visit_date: string
+          duration_minutes: number | null
+          purpose: string
+          observations: string | null
+          notes: string | null
+          action_items: string | null
+          visited_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          child_id: string
+          visit_date: string
+          duration_minutes?: number | null
+          purpose: string
+          observations?: string | null
+          notes?: string | null
+          action_items?: string | null
+          visited_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          child_id?: string
+          visit_date?: string
+          duration_minutes?: number | null
+          purpose?: string
+          observations?: string | null
+          notes?: string | null
+          action_items?: string | null
+          visited_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_visits_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "home_visits_visited_by_fkey"
+            columns: ["visited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      overdue_visit_alerts: {
+        Row: {
+          id: string
+          child_id: string
+          days_since_last_visit: number
+          alert_type: string
+          message: string | null
+          created_at: string
+          acknowledged: boolean
+          acknowledged_by: string | null
+          acknowledged_at: string | null
+          resolved: boolean
+          resolved_by: string | null
+          resolved_at: string | null
+        }
+        Insert: {
+          id?: string
+          child_id: string
+          days_since_last_visit: number
+          alert_type?: string
+          message?: string | null
+          created_at?: string
+          acknowledged?: boolean
+          acknowledged_by?: string | null
+          acknowledged_at?: string | null
+          resolved?: boolean
+          resolved_by?: string | null
+          resolved_at?: string | null
+        }
+        Update: {
+          id?: string
+          child_id?: string
+          days_since_last_visit?: number
+          alert_type?: string
+          message?: string | null
+          created_at?: string
+          acknowledged?: boolean
+          acknowledged_by?: string | null
+          acknowledged_at?: string | null
+          resolved?: boolean
+          resolved_by?: string | null
+          resolved_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "overdue_visit_alerts_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       absence_alerts: {
         Row: {
           id: string
