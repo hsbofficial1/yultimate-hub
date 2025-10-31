@@ -37,6 +37,43 @@ A comprehensive public registration form with the following features:
   - Pending → Approved → Registered
   - Rejection flow available for administrators
 
+### 1.2 Tournament Director Dashboard ✓
+
+A comprehensive team management interface with the following features:
+
+- **Team Management Table**:
+  - View all registered teams in a sortable table
+  - Search by team name, captain, or email
+  - Filter by status (all, pending, approved, registered, rejected)
+  - Display team details: name, captain, contact info, player count, status
+
+- **Approve/Reject Teams**:
+  - Approve teams individually with optional notes
+  - Reject teams with required rejection notes
+  - Visual status badges (pending, approved, registered, rejected)
+  - One-click approval/rejection from table actions
+
+- **Bulk Operations**:
+  - Select multiple teams via checkboxes
+  - Select all teams at once
+  - Bulk approve or reject multiple teams
+  - Bulk action dialog for confirmations
+
+- **Export Functionality**:
+  - Export team rosters to CSV format
+  - Includes all team details and player counts
+  - Timestamped filenames for easy organization
+
+- **Capacity Management**:
+  - Real-time team capacity counter (e.g., "12/16 teams registered")
+  - Automatic waitlist calculation for teams beyond capacity
+  - Visual indicator for waitlisted teams in the tab
+
+- **Waitlist Management**:
+  - Teams beyond capacity automatically shown as waitlisted
+  - Clear visual indicators for waitlist status
+  - Integration with approval workflow
+
 ## Database Setup
 
 Run the migrations in order:
