@@ -107,6 +107,125 @@ export type Database = {
         }
         Relationships: []
       }
+      child_program_enrollments: {
+        Row: {
+          id: string
+          child_id: string
+          program_id: string | null
+          program_type: string | null
+          enrollment_date: string
+          status: string
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          child_id: string
+          program_id?: string | null
+          program_type?: string | null
+          enrollment_date?: string
+          status?: string
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          child_id?: string
+          program_id?: string | null
+          program_type?: string | null
+          enrollment_date?: string
+          status?: string
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_program_enrollments_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_program_enrollments_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      child_transfer_history: {
+        Row: {
+          id: string
+          child_id: string
+          from_program_id: string | null
+          to_program_id: string | null
+          from_program_type: string | null
+          to_program_type: string | null
+          transfer_date: string
+          reason: string | null
+          transferred_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          child_id: string
+          from_program_id?: string | null
+          to_program_id?: string | null
+          from_program_type?: string | null
+          to_program_type?: string | null
+          transfer_date: string
+          reason?: string | null
+          transferred_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          child_id?: string
+          from_program_id?: string | null
+          to_program_id?: string | null
+          from_program_type?: string | null
+          to_program_type?: string | null
+          transfer_date?: string
+          reason?: string | null
+          transferred_by?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_transfer_history_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_transfer_history_from_program_id_fkey"
+            columns: ["from_program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_transfer_history_to_program_id_fkey"
+            columns: ["to_program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_transfer_history_transferred_by_fkey"
+            columns: ["transferred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           field: string
@@ -170,6 +289,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      programs: {
+        Row: {
+          id: string
+          name: string
+          program_type: string
+          description: string | null
+          active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          program_type: string
+          description?: string | null
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          program_type?: string
+          description?: string | null
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
