@@ -74,6 +74,7 @@ A comprehensive team management interface with the following features:
   - Clear visual indicators for waitlist status
   - Integration with approval workflow
 
+//HSB
 ### 1.3 Match Scheduling System ✓
 
 A comprehensive scheduling system with the following features:
