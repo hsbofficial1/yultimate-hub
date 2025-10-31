@@ -150,6 +150,103 @@ A comprehensive spirit of the game scoring system with the following features:
   - Dispute indicators
   - Historical tracking
 
+<<<<<<< Updated upstream
+=======
+### 1.6 Live Leaderboards ✓
+
+Real-time tournament standings and performance tracking with the following features:
+
+- **Performance Leaderboard**:
+  - Wins, losses, draws, and games played
+  - Point differential (goals for/against)
+  - Automatic tie-breaker logic
+  - Color-coded rankings (Gold, Silver, Bronze)
+  - Real-time updates via WebSocket
+
+- **Spirit Leaderboard**:
+  - Average spirit score (/20)
+  - Number of spirit scores received
+  - Rankings by sportsmanship
+  - Real-time spirit score updates
+
+- **Combined Leaderboard**:
+  - Weighted scoring: 70% performance, 30% spirit
+  - Comprehensive team ranking
+  - Dual-position display (performance rank + spirit rank)
+  - Automatic recalculation on updates
+
+- **Filtering & Views**:
+  - Filter by pool/bracket
+  - Separate views for each leaderboard type
+  - Overall and pool-specific rankings
+  - Smooth tab navigation
+
+- **Public Access**:
+  - No login required to view leaderboards
+  - Accessible at `/tournament/:id/leaderboards`
+  - Real-time updates for all viewers
+  - WebSocket automatic refresh
+
+- **Tie-Breaker Logic**:
+  - 1. Head-to-head record
+  - 2. Point differential
+  - 3. Spirit score average
+  - Automatic calculation in database
+
+- **Visual Indicators**:
+  - Medal icons for top 3 positions
+  - Color-coded borders and backgrounds
+  - Badges for pool assignments
+  - Live refresh indicators
+
+### 1.7 Tournament Reports & Analytics ✓
+
+Comprehensive tournament reporting and analytics with the following features:
+
+- **Export Functionality**:
+  - Tournament summary export (JSON format, Excel-ready)
+  - Final standings export
+  - All match results export
+  - Spirit scores by team export
+  - MVP calculations included
+
+- **Statistics Dashboard**:
+  - Final standings display
+  - Top spirit scores overview
+  - Real-time data from leaderboards
+  - Color-coded rankings
+
+- **Analytics & Visualizations**:
+  - **Spirit Score Trends**: Line chart showing average spirit scores over time
+  - **Pool Competitiveness**: Bar chart of closest average score differentials
+  - **Field Utilization**: Pie chart of matches per field
+  - **MVP Calculations**: Top scorer + highest spirit combined
+
+- **MVP System**:
+  - Top scoring teams by goals scored
+  - Highest spirit score teams
+  - Combined MVP score (50% performance, 50% spirit)
+  - Top 5 MVP teams display
+  - Gold highlighting for #1 MVP
+
+- **Historical Comparison**:
+  - Compare tournament with previous years
+  - Previous tournament selector
+  - Trend analysis framework
+  - Year-over-year metrics
+
+- **Four-Tab Interface**:
+  - **Summary**: Final standings and top spirit scores
+  - **Analytics**: Charts and visualizations
+  - **MVPs**: Top performing teams
+  - **Historical**: Year-over-year comparisons
+
+- **Public Access**:
+  - No login required to view reports
+  - Accessible at `/tournament/:id/reports`
+  - Shareable tournament insights
+
+>>>>>>> Stashed changes
 ## Database Setup
 
 Run the migrations in order:

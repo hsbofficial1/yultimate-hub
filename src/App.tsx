@@ -15,6 +15,11 @@ import Reports from "./pages/Reports";
 import Children from "./pages/Children";
 import Sessions from "./pages/Sessions";
 import SessionAttendance from "./pages/SessionAttendance";
+<<<<<<< Updated upstream
+=======
+import Leaderboards from "./pages/Leaderboards";
+import TournamentReports from "./pages/TournamentReports";
+>>>>>>> Stashed changes
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -69,6 +74,17 @@ const App = () => (
               }
             />
             <Route
+<<<<<<< Updated upstream
+=======
+              path="/tournament/:tournamentId/leaderboards"
+              element={<Leaderboards />}
+            />
+            <Route
+              path="/tournament/:id/reports"
+              element={<TournamentReports />}
+            />
+            <Route
+>>>>>>> Stashed changes
               path="/reports"
               element={
                 <ProtectedRoute>
