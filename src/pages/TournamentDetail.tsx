@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus, Globe, Loader2 } from 'lucide-react';
 
 interface Tournament {
   id: string;
@@ -48,6 +48,7 @@ const TournamentDetail = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -113,6 +114,34 @@ const TournamentDetail = () => {
     }
   };
 
+  const publishTournament = async () => {
+    if (!tournament) return;
+    
+    setPublishing(true);
+    try {
+      const { error } = await supabase
+        .from('tournaments')
+        .update({ status: 'registration_open' })
+        .eq('id', tournament.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Tournament published!',
+        description: 'The tournament is now open for registration.',
+      });
+      fetchData();
+    } catch (error: any) {
+      toast({
+        title: 'Error publishing tournament',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -133,22 +162,24 @@ const TournamentDetail = () => {
   const canRegister = tournament.status === 'registration_open' && teams.length < tournament.max_teams;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/8 via-secondary/6 to-accent/6 grass-texture">
+      <header className="border-b-2 border-primary/30 bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-md">
+        <div className="container mx-auto px-4 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => navigate('/tournaments')}>
+              <Button variant="ghost" size="icon" onClick={() => navigate('/tournaments')} className="hover:bg-primary/10 border border-border/50">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold">{tournament.name}</h1>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                  <span className="flex items-center gap-1">
+                <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                  {tournament.name}
+                </h1>
+                <div className="flex items-center gap-4 text-sm mt-2">
+                  <span className="flex items-center gap-2 font-semibold text-muted-foreground">
                     <Calendar className="h-4 w-4" />
                     {new Date(tournament.start_date).toLocaleDateString()} - {new Date(tournament.end_date).toLocaleDateString()}
                   </span>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-2 font-semibold text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     {tournament.location}
                   </span>
@@ -156,7 +187,26 @@ const TournamentDetail = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge>{tournament.status.replace('_', ' ')}</Badge>
+              <Badge className="font-bold uppercase tracking-wide">{tournament.status.replace('_', ' ')}</Badge>
+              {canManage && tournament.status === 'draft' && (
+                <Button 
+                  onClick={publishTournament}
+                  disabled={publishing}
+                  className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                >
+                  {publishing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Publishing...
+                    </>
+                  ) : (
+                    <>
+                      <Globe className="h-4 w-4 mr-2" />
+                      Publish Tournament
+                    </>
+                  )}
+                </Button>
+              )}
               {canRegister && (
                 <Button onClick={() => navigate(`/tournament/${id}/register`)}>
                   <UserPlus className="h-4 w-4 mr-2" />
