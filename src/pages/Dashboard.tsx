@@ -4,9 +4,10 @@ import { supabase } from '@/lib/supabaseClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Users, Calendar, BarChart3, LogOut, UserCircle2, Baby, CalendarDays, Target, Award, Activity, AlertTriangle } from 'lucide-react';
+import { Trophy, Users, Calendar, BarChart3, LogOut, UserCircle2, Baby, CalendarDays, Target, Award, Activity, AlertTriangle, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AbsenceAlerts } from '@/components/AbsenceAlerts';
+import { StreakLeaderboard } from '@/components/StreakLeaderboard';
 
 const Dashboard = () => {
   const { user, userRole, signOut } = useAuth();
@@ -239,6 +240,26 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
+
+            {/* Streak Leaderboard Section */}
+            {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-black uppercase tracking-wider text-foreground/90 flex items-center gap-2">
+                    <Sparkles className="h-6 w-6 text-primary" />
+                    Streak Leaderboard
+                  </h2>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate('/streak-leaderboard')}
+                  >
+                    View Full Leaderboard
+                  </Button>
+                </div>
+                <StreakLeaderboard limit={5} />
+              </div>
+            )}
 
             {/* Absence Alerts Section */}
             {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (

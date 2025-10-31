@@ -3,6 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 import { attendanceSync } from "./lib/attendanceSync";
 import { offlineStorage } from "./lib/offlineStorage";
+import { milestoneNotifications } from "./lib/milestoneNotifications";
 
 // Initialize offline storage and sync service
 offlineStorage.init().then(() => {
@@ -16,5 +17,11 @@ setInterval(() => {
     attendanceSync.syncPendingData();
   }
 }, 30000);
+
+// Process milestone notifications on load and periodically
+milestoneNotifications.processPendingNotifications();
+setInterval(() => {
+  milestoneNotifications.processPendingNotifications();
+}, 5 * 60 * 1000); // Every 5 minutes
 
 createRoot(document.getElementById("root")!).render(<App />);
