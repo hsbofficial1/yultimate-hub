@@ -153,6 +153,59 @@ export type Database = {
           },
         ]
       }
+      assessment_alerts: {
+        Row: {
+          id: string
+          child_id: string
+          assessment_type: string
+          days_overdue: number
+          message: string | null
+          created_at: string
+          acknowledged: boolean
+          acknowledged_by: string | null
+          acknowledged_at: string | null
+          resolved: boolean
+          resolved_by: string | null
+          resolved_at: string | null
+        }
+        Insert: {
+          id?: string
+          child_id: string
+          assessment_type: string
+          days_overdue: number
+          message?: string | null
+          created_at?: string
+          acknowledged?: boolean
+          acknowledged_by?: string | null
+          acknowledged_at?: string | null
+          resolved?: boolean
+          resolved_by?: string | null
+          resolved_at?: string | null
+        }
+        Update: {
+          id?: string
+          child_id?: string
+          assessment_type?: string
+          days_overdue?: number
+          message?: string | null
+          created_at?: string
+          acknowledged?: boolean
+          acknowledged_by?: string | null
+          acknowledged_at?: string | null
+          resolved?: boolean
+          resolved_by?: string | null
+          resolved_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_alerts_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attendance: {
         Row: {
           child_id: string
@@ -425,6 +478,78 @@ export type Database = {
             columns: ["tournament_id"]
             isOneToOne: false
             referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lsas_assessments: {
+        Row: {
+          id: string
+          child_id: string
+          assessment_date: string
+          assessment_type: string
+          assessed_by: string | null
+          physical_score: number
+          physical_notes: string | null
+          social_score: number
+          social_notes: string | null
+          emotional_score: number
+          emotional_notes: string | null
+          cognitive_score: number
+          cognitive_notes: string | null
+          overall_notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          child_id: string
+          assessment_date: string
+          assessment_type: string
+          assessed_by?: string | null
+          physical_score: number
+          physical_notes?: string | null
+          social_score: number
+          social_notes?: string | null
+          emotional_score: number
+          emotional_notes?: string | null
+          cognitive_score: number
+          cognitive_notes?: string | null
+          overall_notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          child_id?: string
+          assessment_date?: string
+          assessment_type?: string
+          assessed_by?: string | null
+          physical_score?: number
+          physical_notes?: string | null
+          social_score?: number
+          social_notes?: string | null
+          emotional_score?: number
+          emotional_notes?: string | null
+          cognitive_score?: number
+          cognitive_notes?: string | null
+          overall_notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lsas_assessments_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lsas_assessments_assessed_by_fkey"
+            columns: ["assessed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -744,7 +869,45 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      child_assessment_timeline: {
+        Row: {
+          id: string
+          child_id: string
+          child_name: string
+          assessment_date: string
+          assessment_type: string
+          physical_score: number
+          social_score: number
+          emotional_score: number
+          cognitive_score: number
+          average_score: number
+          physical_notes: string | null
+          social_notes: string | null
+          emotional_notes: string | null
+          cognitive_notes: string | null
+          overall_notes: string | null
+          assessed_by: string | null
+          assessor_name: string | null
+          created_at: string
+          updated_at: string
+        }
+        Relationships: []
+      }
+      cohort_assessment_averages: {
+        Row: {
+          assessment_date: string
+          assessment_type: string
+          age: number | null
+          program_type: string | null
+          avg_physical: number
+          avg_social: number
+          avg_emotional: number
+          avg_cognitive: number
+          avg_overall: number
+          cohort_size: number
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_roles: {
@@ -758,8 +921,29 @@ export type Database = {
         }
         Returns: boolean
       }
+      get_child_assessment_progress: {
+        Args: { _child_id: string }
+        Returns: {
+          assessment_date: string
+          assessment_type: string
+          physical_score: number
+          social_score: number
+          emotional_score: number
+          cognitive_score: number
+          average_score: number
+          cohort_physical: number | null
+          cohort_social: number | null
+          cohort_emotional: number | null
+          cohort_cognitive: number | null
+          cohort_average: number | null
+        }[]
+      }
     }
     Enums: {
+      assessment_type:
+        | "baseline"
+        | "endline"
+        | "periodic"
       user_role:
         | "admin"
         | "tournament_director"
@@ -895,6 +1079,11 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      assessment_type: [
+        "baseline",
+        "endline",
+        "periodic",
+      ],
       user_role: [
         "admin",
         "tournament_director",
