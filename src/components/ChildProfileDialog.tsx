@@ -31,15 +31,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Upload, X, User, Phone, MessageCircle, School, Heart, History } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-<<<<<<< Updated upstream
-=======
 import { AttendanceHistoryTimeline } from './AttendanceHistoryTimeline';
 import { ChildBadges } from './ChildBadges';
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
 import { HomeVisitTimeline } from './HomeVisitTimeline';
->>>>>>> Stashed changes
 
 const childSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
@@ -79,7 +73,7 @@ interface ChildData extends ChildFormData {
       name: string;
       program_type: string;
     } | null;
-  }>;
+  }>;  
   transfer_history?: Array<{
     id: string;
     from_program_type: string | null;
@@ -88,7 +82,7 @@ interface ChildData extends ChildFormData {
     reason: string | null;
     from_program?: { name: string } | null;
     to_program?: { name: string } | null;
-  }>;
+  }>; 
 }
 
 export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: ChildProfileDialogProps) => {
@@ -700,4 +694,3 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
     </Dialog>
   );
 };
-
