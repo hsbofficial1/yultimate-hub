@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SpiritScoreDialog } from '@/components/SpiritScoreDialog';
 import { ArrowLeft, Plus, Minus } from 'lucide-react';
 
 interface Match {
@@ -23,8 +25,10 @@ const MatchScoring = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [match, setMatch] = useState<Match | null>(null);
   const [loading, setLoading] = useState(true);
+  const [spiritScoreSubmitted, setSpiritScoreSubmitted] = useState(false);
 
   useEffect(() => {
     fetchMatch();
@@ -65,6 +69,19 @@ const MatchScoring = () => {
 
       if (error) throw error;
       setMatch(data);
+
+      // Check if user has already submitted spirit score
+      if (data && user) {
+        const userTeamId = data.team_a_id;
+        const { data: spiritScores } = await supabase
+          .from('spirit_scores')
+          .select('id')
+          .eq('match_id', id)
+          .eq('from_team_id', userTeamId)
+          .limit(1);
+
+        setSpiritScoreSubmitted(spiritScores && spiritScores.length > 0);
+      }
     } catch (error: any) {
       toast({
         title: 'Error fetching match',
@@ -272,6 +289,33 @@ const MatchScoring = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Spirit Score Submission */}
+        {match.status === 'completed' && !spiritScoreSubmitted && (
+          <Card className="mt-6 border-2 border-primary/30 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="text-center">Spirit of the Game</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center gap-4">
+                <p className="text-center text-muted-foreground">
+                  Rate {match.team_b?.name} on spirit of the game
+                </p>
+                <SpiritScoreDialog
+                  matchId={match.id}
+                  fromTeamId={match.team_a.id}
+                  toTeamId={match.team_b.id}
+                  toTeamName={match.team_b?.name || 'Opponent'}
+                  matchStatus={match.status}
+                  onSuccess={() => {
+                    setSpiritScoreSubmitted(true);
+                    fetchMatch();
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );
