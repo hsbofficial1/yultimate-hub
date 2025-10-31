@@ -150,6 +150,53 @@ A comprehensive spirit of the game scoring system with the following features:
   - Dispute indicators
   - Historical tracking
 
+### 1.6 Live Leaderboards ✓
+
+Real-time tournament standings and performance tracking with the following features:
+
+- **Performance Leaderboard**:
+  - Wins, losses, draws, and games played
+  - Point differential (goals for/against)
+  - Automatic tie-breaker logic
+  - Color-coded rankings (Gold, Silver, Bronze)
+  - Real-time updates via WebSocket
+
+- **Spirit Leaderboard**:
+  - Average spirit score (/20)
+  - Number of spirit scores received
+  - Rankings by sportsmanship
+  - Real-time spirit score updates
+
+- **Combined Leaderboard**:
+  - Weighted scoring: 70% performance, 30% spirit
+  - Comprehensive team ranking
+  - Dual-position display (performance rank + spirit rank)
+  - Automatic recalculation on updates
+
+- **Filtering & Views**:
+  - Filter by pool/bracket
+  - Separate views for each leaderboard type
+  - Overall and pool-specific rankings
+  - Smooth tab navigation
+
+- **Public Access**:
+  - No login required to view leaderboards
+  - Accessible at `/tournament/:id/leaderboards`
+  - Real-time updates for all viewers
+  - WebSocket automatic refresh
+
+- **Tie-Breaker Logic**:
+  - 1. Head-to-head record
+  - 2. Point differential
+  - 3. Spirit score average
+  - Automatic calculation in database
+
+- **Visual Indicators**:
+  - Medal icons for top 3 positions
+  - Color-coded borders and backgrounds
+  - Badges for pool assignments
+  - Live refresh indicators
+
 ## Database Setup
 
 Run the migrations in order:
@@ -162,6 +209,7 @@ supabase migration up
 psql <your_database_url> -f supabase/migrations/20250102000000_team_registration_enhancements.sql
 psql <your_database_url> -f supabase/migrations/20250103000000_match_scheduling_system.sql
 psql <your_database_url> -f supabase/migrations/20250104000000_spirit_scoring_enhancements.sql
+psql <your_database_url> -f supabase/migrations/20250105000000_leaderboards.sql
 ```
 
 Migration 1 (Team Registration):
@@ -185,6 +233,15 @@ Migration 3 (Spirit Scoring):
 - Create spirit_score_analytics view
 - Add reminder notification trigger
 - Add dispute management policies
+
+Migration 4 (Leaderboards):
+- Create performance_leaderboard view with W-L-D stats
+- Create spirit_leaderboard view with averages
+- Create combined_leaderboard with weighted scoring
+- Create get_team_performance() function
+- Create get_team_spirit_score() function
+- Create get_head_to_head() function for tie-breakers
+- Grant public access to all leaderboard views
 
 ## Storage Bucket
 
