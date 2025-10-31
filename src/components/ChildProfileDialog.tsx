@@ -31,11 +31,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Upload, X, User, Phone, MessageCircle, School, Heart, History } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-<<<<<<< Updated upstream
-=======
 import { AttendanceHistoryTimeline } from './AttendanceHistoryTimeline';
 import { ChildBadges } from './ChildBadges';
->>>>>>> Stashed changes
 
 const childSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
@@ -648,35 +645,49 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
 
             <TabsContent value="history" className="space-y-4">
               {childId && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Transfer History</h3>
-                  {childData?.transfer_history && childData.transfer_history.length > 0 ? (
-                    <div className="space-y-2">
-                      {childData.transfer_history.map((transfer) => (
-                        <div key={transfer.id} className="p-4 border rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">
-                                {transfer.from_program?.name || transfer.from_program_type || 'Unknown'}
-                              </span>
-                              <span>→</span>
-                              <span className="font-medium">
-                                {transfer.to_program?.name || transfer.to_program_type || 'Unknown'}
-                              </span>
+                <div className="space-y-6">
+                  <Tabs defaultValue="attendance" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="attendance">Attendance</TabsTrigger>
+                      <TabsTrigger value="transfers">Transfers</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="attendance" className="space-y-4">
+                      <AttendanceHistoryTimeline
+                        childId={childId}
+                        childName={form.watch('name') || childData?.name || ''}
+                      />
+                    </TabsContent>
+                    <TabsContent value="transfers" className="space-y-4">
+                      <h3 className="text-lg font-semibold">Transfer History</h3>
+                      {childData?.transfer_history && childData.transfer_history.length > 0 ? (
+                        <div className="space-y-2">
+                          {childData.transfer_history.map((transfer) => (
+                            <div key={transfer.id} className="p-4 border rounded-lg">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">
+                                    {transfer.from_program?.name || transfer.from_program_type || 'Unknown'}
+                                  </span>
+                                  <span>→</span>
+                                  <span className="font-medium">
+                                    {transfer.to_program?.name || transfer.to_program_type || 'Unknown'}
+                                  </span>
+                                </div>
+                                <span className="text-sm text-muted-foreground">
+                                  {new Date(transfer.transfer_date).toLocaleDateString()}
+                                </span>
+                              </div>
+                              {transfer.reason && (
+                                <p className="text-sm text-muted-foreground">{transfer.reason}</p>
+                              )}
                             </div>
-                            <span className="text-sm text-muted-foreground">
-                              {new Date(transfer.transfer_date).toLocaleDateString()}
-                            </span>
-                          </div>
-                          {transfer.reason && (
-                            <p className="text-sm text-muted-foreground">{transfer.reason}</p>
-                          )}
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-center text-muted-foreground py-8">No transfer history</p>
-                  )}
+                      ) : (
+                        <p className="text-center text-muted-foreground py-8">No transfer history</p>
+                      )}
+                    </TabsContent>
+                  </Tabs>
                 </div>
               )}
             </TabsContent>
