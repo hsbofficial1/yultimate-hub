@@ -74,7 +74,6 @@ A comprehensive team management interface with the following features:
   - Clear visual indicators for waitlist status
   - Integration with approval workflow
 
-//HSB
 ### 1.3 Match Scheduling System ✓
 
 A comprehensive scheduling system with the following features:
@@ -111,6 +110,46 @@ A comprehensive scheduling system with the following features:
   - Flexible time windows
   - Pool configuration
 
+### 1.5 Spirit Scoring System ✓
+
+A comprehensive spirit of the game scoring system with the following features:
+
+- **5-Category Scoring**:
+  - Rules Knowledge & Use (0-4 points)
+  - Fouls & Body Contact (0-4 points)
+  - Fair-Mindedness (0-4 points)
+  - Positive Attitude & Self-Control (0-4 points)
+  - Communication (0-4 points)
+  - Auto-calculated total (/20 points)
+
+- **Submission Controls**:
+  - Only submit after match completion
+  - One spirit score per team per match
+  - Optional text comments field
+  - Visual feedback and descriptions
+
+- **Anomaly Detection**:
+  - Automatic flag for scores >2 standard deviations from team average
+  - Database function for real-time anomaly checking
+  - Analytics view for spirit score tracking
+
+- **Dispute Workflow**:
+  - Dispute system for contested scores
+  - Tournament director resolution capability
+  - Dispute reason tracking
+  - Resolution status management
+
+- **Reminders & Notifications**:
+  - Automatic reminder 2 hours after match completion
+  - Trigger-based notification system
+  - Email notification support (configurable)
+
+- **Spirit Score Display**:
+  - Real-time spirit score viewer
+  - Color-coded scores by quality
+  - Dispute indicators
+  - Historical tracking
+
 ## Database Setup
 
 Run the migrations in order:
@@ -122,6 +161,7 @@ supabase migration up
 # Or manually run the migration files
 psql <your_database_url> -f supabase/migrations/20250102000000_team_registration_enhancements.sql
 psql <your_database_url> -f supabase/migrations/20250103000000_match_scheduling_system.sql
+psql <your_database_url> -f supabase/migrations/20250104000000_spirit_scoring_enhancements.sql
 ```
 
 Migration 1 (Team Registration):
@@ -138,6 +178,13 @@ Migration 2 (Match Scheduling):
 - Create indexes for performance optimization
 - Add conflict detection database function
 - Add timestamp update triggers
+
+Migration 3 (Spirit Scoring):
+- Add dispute and resolution fields to spirit_scores table
+- Create anomaly detection database function
+- Create spirit_score_analytics view
+- Add reminder notification trigger
+- Add dispute management policies
 
 ## Storage Bucket
 
