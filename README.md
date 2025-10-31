@@ -74,6 +74,7 @@ A comprehensive team management interface with the following features:
   - Clear visual indicators for waitlist status
   - Integration with approval workflow
 
+//HSB
 ## Database Setup
 
 Run the migrations in order:
