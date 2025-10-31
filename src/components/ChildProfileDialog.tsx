@@ -77,7 +77,7 @@ interface ChildData extends ChildFormData {
       name: string;
       program_type: string;
     } | null;
-  }>;
+  }>;  
   transfer_history?: Array<{
     id: string;
     from_program_type: string | null;
@@ -86,7 +86,7 @@ interface ChildData extends ChildFormData {
     reason: string | null;
     from_program?: { name: string } | null;
     to_program?: { name: string } | null;
-  }>;
+  }>; 
 }
 
 export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: ChildProfileDialogProps) => {
@@ -698,4 +698,3 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
     </Dialog>
   );
 };
-
