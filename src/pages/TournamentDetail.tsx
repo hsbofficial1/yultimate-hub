@@ -13,7 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus, Globe, Loader2, Download, CheckCircle2, XCircle, FileText, Filter } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus, Globe, Loader2, Download, CheckCircle2, XCircle, FileText, Filter, Trophy } from 'lucide-react';
 
 interface Tournament {
   id: string;
@@ -387,6 +387,13 @@ const TournamentDetail = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => navigate(`/tournament/${id}/leaderboards`)}
+              >
+                <Trophy className="h-4 w-4 mr-2" />
+                Leaderboards
+              </Button>
               <Badge className="font-bold uppercase tracking-wide">{tournament.status.replace('_', ' ')}</Badge>
               {canManage && tournament.status === 'draft' && (
                 <Button 

@@ -15,6 +15,7 @@ import Reports from "./pages/Reports";
 import Children from "./pages/Children";
 import Sessions from "./pages/Sessions";
 import SessionAttendance from "./pages/SessionAttendance";
+import Leaderboards from "./pages/Leaderboards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -67,6 +68,10 @@ const App = () => (
                   <TeamRegistration />
                 </ProtectedRoute>
               }
+            />
+            <Route
+              path="/tournament/:tournamentId/leaderboards"
+              element={<Leaderboards />}
             />
             <Route
               path="/reports"
