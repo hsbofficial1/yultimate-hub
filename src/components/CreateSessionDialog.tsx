@@ -31,6 +31,7 @@ const sessionSchema = z.object({
   time: z.string().min(1, 'Time is required'),
   location: z.string().min(3, 'Location is required').max(100),
   program_type: z.string().min(1, 'Program type is required'),
+  duration_minutes: z.number().min(30).max(360).optional(),
   notes: z.string().max(500).optional(),
 });
 
@@ -48,6 +49,7 @@ export const CreateSessionDialog = ({ onSuccess }: { onSuccess?: () => void }) =
       time: '',
       location: '',
       program_type: 'school',
+      duration_minutes: 90,
       notes: '',
     },
   });
@@ -59,6 +61,7 @@ export const CreateSessionDialog = ({ onSuccess }: { onSuccess?: () => void }) =
         time: data.time,
         location: data.location,
         program_type: data.program_type,
+        duration_minutes: data.duration_minutes || 90,
         notes: data.notes || null,
         coach_id: user?.id || '',
       });
@@ -127,6 +130,27 @@ export const CreateSessionDialog = ({ onSuccess }: { onSuccess?: () => void }) =
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="duration_minutes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duration (minutes)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      step="15"
+                      min="30"
+                      max="360"
+                      {...field}
+                      onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}

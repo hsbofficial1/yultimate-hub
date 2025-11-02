@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, Users, TrendingUp, Calendar, ArrowLeft, Download, FileSpreadsheet, Trophy, Target, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { CoachingReports } from '@/components/CoachingReports';
 import {
   LineChart,
   Line,
@@ -350,13 +351,18 @@ const Reports = () => {
             </div>
 
             {/* Analytics Tabs */}
-            <Tabs defaultValue="attendance" className="w-full animate-fade-in">
-              <TabsList className="grid w-full grid-cols-4">
+            <Tabs defaultValue="coaching" className="w-full animate-fade-in">
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="coaching">Coaching</TabsTrigger>
                 <TabsTrigger value="attendance">Attendance</TabsTrigger>
                 <TabsTrigger value="programs">Programs</TabsTrigger>
                 <TabsTrigger value="demographics">Demographics</TabsTrigger>
                 <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="coaching" className="space-y-4">
+                <CoachingReports />
+              </TabsContent>
 
               <TabsContent value="attendance" className="space-y-4">
                 <Card>

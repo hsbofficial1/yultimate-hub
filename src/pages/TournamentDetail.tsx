@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus, Globe, Loader2, Download, CheckCircle2, XCircle, FileText, Filter, Trophy } from 'lucide-react';
+import { TournamentPlanningChecklist } from '@/components/TournamentPlanningChecklist';
+import { ClosingCeremonyPlanning } from '@/components/ClosingCeremonyPlanning';
 
 interface Tournament {
   id: string;
@@ -307,13 +309,6 @@ const TournamentDetail = () => {
     return matchesStatus && matchesSearch;
   });
 
-  // Calculate team counts
-  const approvedTeams = teams.filter(t => t.status === 'approved' || t.status === 'registered').length;
-  const pendingTeams = teams.filter(t => t.status === 'pending').length;
-  const waitlistTeams = teams.length > tournament.max_teams 
-    ? teams.slice(tournament.max_teams).filter(t => t.status === 'pending').length 
-    : 0;
-
   const publishTournament = async () => {
     if (!tournament) return;
     
@@ -357,6 +352,13 @@ const TournamentDetail = () => {
       </div>
     );
   }
+
+  // Calculate team counts (AFTER null checks)
+  const approvedTeams = teams.filter(t => t.status === 'approved' || t.status === 'registered').length;
+  const pendingTeams = teams.filter(t => t.status === 'pending').length;
+  const waitlistTeams = teams.length > tournament.max_teams 
+    ? teams.slice(tournament.max_teams).filter(t => t.status === 'pending').length 
+    : 0;
 
   const canManage = userRole === 'admin' || userRole === 'tournament_director';
   const canRegister = tournament.status === 'registration_open' && teams.length < tournament.max_teams;
@@ -427,13 +429,17 @@ const TournamentDetail = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="teams">
-          <TabsList>
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-4 lg:grid-cols-7 h-auto">
             <TabsTrigger value="teams">
               Teams ({approvedTeams}/{tournament.max_teams})
-              {waitlistTeams > 0 && <span className="ml-1 text-destructive">({waitlistTeams} waitlist)</span>}
+              {waitlistTeams > 0 && <span className="ml-1 text-destructive">({waitlistTeams})</span>}
             </TabsTrigger>
             <TabsTrigger value="matches">Matches ({matches.length})</TabsTrigger>
             <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
+            <TabsTrigger value="planning">Planning</TabsTrigger>
+            <TabsTrigger value="ceremony">Ceremony</TabsTrigger>
+            <TabsTrigger value="pools">Pools</TabsTrigger>
+            <TabsTrigger value="rules">Rules</TabsTrigger>
           </TabsList>
 
           <TabsContent value="teams" className="space-y-4 mt-6">
@@ -533,7 +539,14 @@ const TournamentDetail = () => {
                                 />
                               </TableCell>
                             )}
-                            <TableCell className="font-semibold">{team.name}</TableCell>
+                            <TableCell>
+                              <button
+                                className="font-semibold text-primary hover:underline cursor-pointer"
+                                onClick={() => navigate(`/team/${team.id}`)}
+                              >
+                                {team.name}
+                              </button>
+                            </TableCell>
                             <TableCell>{team.captain_name || 'N/A'}</TableCell>
                             <TableCell>{team.email}</TableCell>
                             <TableCell>{team.phone}</TableCell>
@@ -635,6 +648,38 @@ const TournamentDetail = () => {
             <Card>
               <CardContent className="py-12 text-center">
                 <p className="text-muted-foreground">Leaderboard feature coming soon</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="planning" className="mt-6">
+            <TournamentPlanningChecklist tournamentId={id || ''} canManage={canManage} />
+          </TabsContent>
+
+          <TabsContent value="ceremony" className="mt-6">
+            <ClosingCeremonyPlanning tournamentId={id || ''} canManage={canManage} />
+          </TabsContent>
+
+          <TabsContent value="pools" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Seeding & Pools</CardTitle>
+              </CardHeader>
+              <CardContent className="py-12 text-center">
+                <Globe className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-muted-foreground">Seeding and pools feature coming soon</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="rules" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Tournament Rules</CardTitle>
+              </CardHeader>
+              <CardContent className="py-12 text-center">
+                <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-muted-foreground">Rules management feature coming soon</p>
               </CardContent>
             </Card>
           </TabsContent>

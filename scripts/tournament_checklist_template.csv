@@ -1,0 +1,61 @@
+category,task_name,description,priority
+pre_registration,Secure tournament venue,Book and confirm venue availability for all dates,high
+pre_registration,Obtain required permits,Get all necessary permits and permissions from authorities,high
+pre_registration,Set tournament budget,Create comprehensive budget for all tournament expenses,critical
+pre_registration,Define tournament format,Decide on tournament structure (round robin, pool play, etc.),high
+pre_registration,Set registration dates,Determine registration open and close dates,high
+registration,Create registration form,Design and publish online registration form,high
+registration,Setup payment system,Configure payment gateway for registrations,critical
+registration,Team capacity planning,Determine maximum number of teams,medium
+registration,Communicate registration to teams,Send invitations and announcements,high
+pre_tournament,Finalize team confirmations,Verify all teams are confirmed and paid,critical
+pre_tournament,Create pools and brackets,Assign teams to pools and generate brackets,high
+pre_tournament,Generate match schedule,Create complete match schedule with times and fields,high
+pre_tournament,Assign officials and volunteers,Recruit and assign match officials,medium
+pre_tournament,Prepare equipment,Ensure all equipment is ready and available,critical
+pre_tournament,Setup communication channels,Create WhatsApp/email groups for teams,medium
+pre_tournament,Publish tournament rules,Finalize and publish all rules online,high
+pre_tournament,Order trophies and medals,Procure awards for winners,high
+pre_tournament,Arrange medical support,Secure first aid and medical staff,critical
+pre_tournament,Plan parking and logistics,Organize parking and arrival logistics,medium
+pre_tournament,Prepare scoreboards,Setup physical or digital scoreboards,medium
+during_tournament,Monitor match progress,Track all matches and scores in real-time,critical
+during_tournament,Manage schedule changes,Handle any last-minute schedule adjustments,high
+during_tournament,Coordinate officials,Ensure officials are at correct fields,high
+during_tournament,Track spirit scores,Collect and monitor spirit score submissions,medium
+during_tournament,Update standings,Keep leaderboards current,critical
+during_tournament,Handle disputes,Resolve any rule disputes or issues,high
+during_tournament,Manage volunteers,Coordinate volunteer activities,medium
+during_tournament,Monitor food and beverage,Ensure refreshments are available,medium
+post_tournament,Finalize all results,Verify and publish final standings,critical
+post_tournament,Calculate final statistics,Compile tournament statistics and analytics,medium
+post_tournament,Generate tournament report,Create comprehensive post-tournament report,high
+post_tournament,Collect feedback,Survey teams for feedback and improvements,medium
+post_tournament,Settle accounts,Finalize all financial transactions,high
+post_tournament,Archive tournament data,Save all tournament data for records,low
+post_tournament,Debrief with staff,Conduct post-tournament review meeting,medium
+ceremony,Plan closing ceremony,Design ceremony schedule and activities,high
+ceremony,Invite speakers,Confirm and prepare ceremony speakers,medium
+ceremony,Prepare awards,Organize awards for presentation,high
+ceremony,Arrange seating,Plan ceremony seating layout,medium
+ceremony,Setup stage and AV,Prepare stage and audio-visual equipment,high
+ceremony,Plan entertainment,Arrange music or entertainment,low
+logistics,Arrange field preparation,Ensure all fields are properly marked and ready,critical
+logistics,Setup tents and shelters,Provide shade and cover areas,medium
+logistics,Organize transportation,Coordinate transport for teams if needed,medium
+logistics,Arrange accommodation,Help teams find nearby accommodation if needed,low
+logistics,Setup food vendors,Arrange food stalls or vendors,medium
+logistics,Plan restroom facilities,Ensure adequate restroom access,high
+logistics,Organize storage,Provide secure storage for equipment,medium
+logistics,Plan waste management,Arrange for garbage collection,medium
+rules,Review WFDF rules,Ensure compliance with official rules,high
+rules,Define tournament-specific rules,Create any custom tournament rules,high
+rules,Communicate rules to teams,Share all rules with registered teams,critical
+rules,Prepare rule clarifications,Anticipate and prepare for rule questions,medium
+rules,Train officials on rules,Ensure officials know all rules,high
+seeding,Collect team seeding data,Gather historical performance data,medium
+seeding,Analyze team strength,Evaluate team capabilities for seeding,medium
+seeding,Create balanced pools,Ensure competitive balance across pools,high
+seeding,Publish seeding information,Share seeding assignments with teams,medium
+seeding,Handle seed disputes,Address any seeding concerns,low
+

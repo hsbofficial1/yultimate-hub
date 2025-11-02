@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trophy, Activity, Zap } from 'lucide-react';
+import { Trophy, Activity, Zap, Key } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabaseClient';
 
 const Auth = () => {
+  const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -25,14 +29,40 @@ const Auth = () => {
     if (user) {
       navigate('/');
     }
-  }, [user, navigate]);
+    
+    // Check if this is a password reset callback
+    const token = searchParams.get('token');
+    const type = searchParams.get('type');
+    if (token && type === 'recovery') {
+      setIsPasswordReset(true);
+      setIsLogin(false);
+    }
+  }, [user, navigate, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (isLogin) {
+      if (isPasswordReset) {
+        // Handle password reset confirmation
+        const { error } = await supabase.auth.updateUser({ password: password });
+        if (error) {
+          toast({
+            title: "Password reset failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Password reset successful",
+            description: "You can now sign in with your new password",
+          });
+          setIsPasswordReset(false);
+          setIsLogin(true);
+          setPassword('');
+        }
+      } else if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
           toast({
@@ -61,6 +91,39 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?type=recovery`,
+      });
+
+      if (error) {
+        toast({
+          title: "Password reset failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Password reset email sent",
+          description: "Check your email for reset instructions",
+        });
+      }
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <Card className="w-full max-w-md shadow-lg border border-border bg-card">
@@ -77,15 +140,83 @@ const Auth = () => {
             </p>
           </div>
 
-          <Tabs value={isLogin ? 'login' : 'signup'} onValueChange={(v) => setIsLogin(v === 'login')} className="w-full">
+          <Tabs 
+            value={isPasswordReset ? 'reset' : (isLogin ? 'login' : 'signup')} 
+            onValueChange={(v) => {
+              setIsPasswordReset(v === 'reset');
+              setIsLogin(v === 'login');
+            }} 
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger 
+                value="login" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                disabled={isPasswordReset}
+              >
                 Sign In
               </TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger 
+                value="signup" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                disabled={isPasswordReset}
+              >
                 Sign Up
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="reset" className="space-y-4 mt-0">
+              <div className="text-center mb-4">
+                <Key className="h-12 w-12 mx-auto mb-3 text-primary" />
+                <h3 className="text-lg font-semibold mb-1">Reset Password</h3>
+                <p className="text-sm text-muted-foreground">
+                  Enter your new password below
+                </p>
+              </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="reset-password" className="text-sm font-medium">
+                    New Password
+                  </Label>
+                  <Input
+                    id="reset-password"
+                    type="password"
+                    placeholder="Enter new password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="h-10"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full h-10"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <Activity className="h-4 w-4 animate-spin" />
+                      Resetting...
+                    </span>
+                  ) : (
+                    'Reset Password'
+                  )}
+                </Button>
+                <Button 
+                  type="button"
+                  variant="ghost"
+                  className="w-full"
+                  onClick={() => {
+                    setIsPasswordReset(false);
+                    setIsLogin(true);
+                    setPassword('');
+                  }}
+                >
+                  Back to Sign In
+                </Button>
+              </form>
+            </TabsContent>
 
             <TabsContent value="login" className="space-y-4 mt-0">
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -116,6 +247,16 @@ const Auth = () => {
                     required
                     className="h-10"
                   />
+                </div>
+                <div className="flex items-center justify-end">
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    disabled={isResetting || !email}
+                    className="text-sm text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isResetting ? 'Sending...' : 'Forgot password?'}
+                  </button>
                 </div>
                 <Button 
                   type="submit" 

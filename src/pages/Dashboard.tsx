@@ -4,10 +4,14 @@ import { supabase } from '@/lib/supabaseClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Users, Calendar, BarChart3, LogOut, UserCircle2, Baby, CalendarDays, Target, Award, Activity, AlertTriangle, Sparkles } from 'lucide-react';
+import { Trophy, Users, Calendar, BarChart3, LogOut, UserCircle2, Baby, CalendarDays, Target, Award, Activity, AlertTriangle, Sparkles, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AbsenceAlerts } from '@/components/AbsenceAlerts';
 import { StreakLeaderboard } from '@/components/StreakLeaderboard';
+import { CoachWorkloadDashboard } from '@/components/CoachWorkloadDashboard';
+import { TeamCaptainDashboard } from '@/components/TeamCaptainDashboard';
+import { CoachDashboard } from '@/components/CoachDashboard';
+import { AppSidebar } from '@/components/AppSidebar';
 
 const Dashboard = () => {
   const { user, userRole, signOut } = useAuth();
@@ -66,6 +70,10 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
+              <Bell className="h-4 w-4" />
+              <span className="absolute top-0 right-0 h-2 w-2 bg-destructive rounded-full"></span>
+            </Button>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-muted/30">
               <UserCircle2 className="h-4 w-4 text-muted-foreground" />
               <div className="text-right">
@@ -238,6 +246,16 @@ const Dashboard = () => {
               </div>
             </div>
 
+            {/* Team Captain Section */}
+            {userRole === 'team_captain' && (
+              <TeamCaptainDashboard />
+            )}
+
+            {/* Coach Section */}
+            {userRole === 'coach' && (
+              <CoachDashboard />
+            )}
+
             {/* Streak Leaderboard Section */}
             {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
               <div>
@@ -255,6 +273,13 @@ const Dashboard = () => {
                   </Button>
                 </div>
                 <StreakLeaderboard limit={5} />
+              </div>
+            )}
+
+            {/* Coach Workload Section */}
+            {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
+              <div>
+                <CoachWorkloadDashboard />
               </div>
             )}
 

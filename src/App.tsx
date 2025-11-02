@@ -11,6 +11,7 @@ import Tournaments from "./pages/Tournaments";
 import TournamentDetail from "./pages/TournamentDetail";
 import MatchScoring from "./pages/MatchScoring";
 import TeamRegistration from "./pages/TeamRegistration";
+import TeamDetail from "./pages/TeamDetail";
 import Reports from "./pages/Reports";
 import Children from "./pages/Children";
 import Sessions from "./pages/Sessions";
@@ -67,6 +68,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <TeamRegistration />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/team/:id"
+              element={
+                <ProtectedRoute>
+                  <TeamDetail />
                 </ProtectedRoute>
               }
             />
