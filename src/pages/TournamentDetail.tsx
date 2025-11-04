@@ -19,6 +19,8 @@ import { ClosingCeremonyPlanning } from '@/components/ClosingCeremonyPlanning';
 import { TournamentRules } from '@/components/TournamentRules';
 import { TournamentSeeding } from '@/components/TournamentSeeding';
 import { TournamentSchedule } from '@/components/TournamentSchedule';
+import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus, Globe, Loader2, Download, CheckCircle2, XCircle, FileText, Filter, Trophy, Mail, Phone, Shield } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface Tournament {
   id: string;
@@ -73,10 +75,18 @@ const TournamentDetail = () => {
   const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState(false);
   const [notes, setNotes] = useState('');
   const [teamPlayers, setTeamPlayers] = useState<Record<string, any[]>>({});
+  const [currentTeamId, setCurrentTeamId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
   }, [id]);
+
+  useEffect(() => {
+    // Keep a default selected team for captain layout
+    if (!currentTeamId && teams.length > 0) {
+      setCurrentTeamId(teams[0].id);
+    }
+  }, [teams, currentTeamId]);
 
   const fetchData = async () => {
     try {
@@ -312,6 +322,15 @@ const TournamentDetail = () => {
     return matchesStatus && matchesSearch;
   });
 
+  const currentTeam = currentTeamId ? teams.find(t => t.id === currentTeamId) || null : null;
+
+  // Calculate team counts
+  const approvedTeams = teams.filter(t => t.status === 'approved' || t.status === 'registered').length;
+  const pendingTeams = teams.filter(t => t.status === 'pending').length;
+  const waitlistTeams = teams.length > tournament.max_teams 
+    ? teams.slice(tournament.max_teams).filter(t => t.status === 'pending').length 
+    : 0;
+
   const publishTournament = async () => {
     if (!tournament) return;
     
@@ -367,19 +386,19 @@ const TournamentDetail = () => {
   const canRegister = tournament.status === 'registration_open' && teams.length < tournament.max_teams;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/8 via-secondary/6 to-accent/6 grass-texture">
-      <header className="border-b-2 border-primary/30 bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-md">
-        <div className="container mx-auto px-4 py-5">
+    <div className="min-h-screen bg-background">
+      <header className="border-b bg-card/80 backdrop-blur sticky top-0 z-10">
+        <div className="container mx-auto max-w-5xl px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => navigate('/tournaments')} className="hover:bg-primary/10 border border-border/50">
+              <Button variant="ghost" size="icon" onClick={() => navigate('/tournaments')} className="hover:bg-muted/60">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                <h1 className="text-2xl font-semibold tracking-tight">
                   {tournament.name}
                 </h1>
-                <div className="flex items-center gap-4 text-sm mt-2">
+                <div className="flex items-center gap-4 text-sm mt-1">
                   <span className="flex items-center gap-2 font-semibold text-muted-foreground">
                     <Calendar className="h-4 w-4" />
                     {new Date(tournament.start_date).toLocaleDateString()} - {new Date(tournament.end_date).toLocaleDateString()}
@@ -399,7 +418,7 @@ const TournamentDetail = () => {
                 <Trophy className="h-4 w-4 mr-2" />
                 Leaderboards
               </Button>
-              <Badge className="font-bold uppercase tracking-wide">{tournament.status.replace('_', ' ')}</Badge>
+              <Badge variant="outline" className="uppercase tracking-wide">{tournament.status.replace('_', ' ')}</Badge>
               {canManage && tournament.status === 'draft' && (
                 <Button 
                   onClick={publishTournament}
@@ -430,9 +449,9 @@ const TournamentDetail = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto max-w-5xl px-4 py-8">
         <Tabs defaultValue="teams">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-4 lg:grid-cols-7 h-auto">
+          <TabsList className="flex flex-wrap">
             <TabsTrigger value="teams">
               Teams ({approvedTeams}/{tournament.max_teams})
               {waitlistTeams > 0 && <span className="ml-1 text-destructive">({waitlistTeams})</span>}
@@ -446,6 +465,67 @@ const TournamentDetail = () => {
           </TabsList>
 
           <TabsContent value="teams" className="space-y-4 mt-6">
+            {/* Team Captain Overview */}
+            {currentTeam ? (
+              <Card className="border border-border bg-card elevated-card rounded-lg">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="h-12 w-12 border">
+                        <AvatarImage src={currentTeam.logo_url || ''} alt={currentTeam.name} />
+                        <AvatarFallback>{currentTeam.name?.charAt(0)?.toUpperCase() || 'T'}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <CardTitle className="text-lg font-semibold">{currentTeam.name}</CardTitle>
+                        <div className="flex items-center gap-2 mt-1 text-sm">
+                          <Badge variant="outline" className="text-xs"><Shield className="h-3 w-3 mr-1" /> Team Captain</Badge>
+                          <span className="text-xs text-muted-foreground">{teamPlayers[currentTeam.id]?.length || 0} players</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {currentTeam.email && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={`mailto:${currentTeam.email}`}><Mail className="h-4 w-4 mr-2" /> Email</a>
+                        </Button>
+                      )}
+                      {currentTeam.phone && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={`tel:${currentTeam.phone}`}><Phone className="h-4 w-4 mr-2" /> Call</a>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="p-3 rounded-md bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Captain</p>
+                      <p className="font-medium">{currentTeam.captain_name || '—'}</p>
+                    </div>
+                    <div className="p-3 rounded-md bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Email</p>
+                      <p className="font-medium truncate">{currentTeam.email || '—'}</p>
+                    </div>
+                    <div className="p-3 rounded-md bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Phone</p>
+                      <p className="font-medium">{currentTeam.phone || '—'}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="border border-border bg-card elevated-card rounded-lg">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Team Captain</CardTitle>
+                  <CardDescription>No teams registered yet</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-sm text-muted-foreground">Add a team to see the captain overview here.</div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Team Management Controls */}
             <Card>
               <CardHeader>
@@ -542,10 +622,11 @@ const TournamentDetail = () => {
                                 />
                               </TableCell>
                             )}
-                            <TableCell>
+                            <TableCell className="font-semibold">
                               <button
-                                className="font-semibold text-primary hover:underline cursor-pointer"
-                                onClick={() => navigate(`/team/${team.id}`)}
+                                className="underline-offset-2 hover:underline"
+                                onClick={(e) => { e.preventDefault(); setCurrentTeamId(team.id); }}
+                                title="Show captain overview"
                               >
                                 {team.name}
                               </button>

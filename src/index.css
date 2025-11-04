@@ -120,7 +120,27 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased selection:bg-primary/15 selection:text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  h1 { @apply tracking-tight; }
+  h2, h3 { @apply tracking-tight; }
+  p { @apply leading-relaxed; }
+  small { @apply text-xs text-muted-foreground; }
+}
+
+@layer utilities {
+  /* Accessible focus styles */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .motion-safe\:transition-none { transition: none !important; }
+    .motion-safe\:animate-none { animation: none !important; }
   }
 }
 

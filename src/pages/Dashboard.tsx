@@ -12,6 +12,12 @@ import { CoachWorkloadDashboard } from '@/components/CoachWorkloadDashboard';
 import { TeamCaptainDashboard } from '@/components/TeamCaptainDashboard';
 import { CoachDashboard } from '@/components/CoachDashboard';
 import { AppSidebar } from '@/components/AppSidebar';
+import { Input } from '@/components/ui/input';
+import { Trophy, Users, BarChart3, LogOut, UserCircle2, Baby, CalendarDays, Target, Award, Activity, AlertTriangle, Sparkles, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { AbsenceAlerts } from '@/components/AbsenceAlerts';
+import { StreakLeaderboard } from '@/components/StreakLeaderboard';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as ReTooltip } from 'recharts';
 
 const Dashboard = () => {
   const { user, userRole, signOut } = useAuth();
@@ -21,9 +27,21 @@ const Dashboard = () => {
   const [matchCount, setMatchCount] = useState(0);
   const [childrenCount, setChildrenCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [recentMatches, setRecentMatches] = useState<Array<{ id: string; created_at?: string }>>([]);
+  const [trends] = useState<Array<{ label: string; matches: number; players: number }>>([
+    { label: 'Mon', matches: 12, players: 45 },
+    { label: 'Tue', matches: 18, players: 52 },
+    { label: 'Wed', matches: 15, players: 49 },
+    { label: 'Thu', matches: 20, players: 58 },
+    { label: 'Fri', matches: 22, players: 61 },
+    { label: 'Sat', matches: 26, players: 73 },
+    { label: 'Sun', matches: 14, players: 40 },
+  ]);
 
   useEffect(() => {
     fetchStats();
+    fetchRecent();
   }, []);
 
   const fetchStats = async () => {
@@ -46,6 +64,19 @@ const Dashboard = () => {
     }
   };
 
+  const fetchRecent = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('matches')
+        .select('id, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      if (!error && data) setRecentMatches(data as any);
+    } catch (err) {
+      // ignore
+    }
+  };
+
   const handleLogout = async () => {
     await signOut();
     navigate('/auth');
@@ -55,7 +86,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
               <Trophy className="h-5 w-5 text-white" />
@@ -69,17 +100,30 @@ const Dashboard = () => {
               </p>
             </div>
           </div>
+          <div className="hidden md:flex items-center gap-2 flex-1 max-w-xl">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search tournaments, teams, players..."
+                className="pl-9"
+              />
+            </div>
+          </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
               <Bell className="h-4 w-4" />
               <span className="absolute top-0 right-0 h-2 w-2 bg-destructive rounded-full"></span>
             </Button>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-muted/30">
-              <UserCircle2 className="h-4 w-4 text-muted-foreground" />
-              <div className="text-right">
-                <p className="text-xs font-medium">{user?.email}</p>
-                <Badge variant="outline" className="text-xs">{userRole?.replace('_', ' ')}</Badge>
-              </div>
+              <button onClick={() => navigate('/profile')} className="flex items-center gap-2">
+                <UserCircle2 className="h-4 w-4 text-muted-foreground" />
+                <div className="text-left">
+                  <p className="text-xs font-medium">{user?.email}</p>
+                  <Badge variant="outline" className="text-xs">{userRole?.replace('_', ' ')}</Badge>
+                </div>
+              </button>
             </div>
             <Button variant="ghost" size="icon" onClick={handleLogout} className="text-muted-foreground hover:text-foreground">
               <LogOut className="h-4 w-4" />
@@ -95,13 +139,13 @@ const Dashboard = () => {
             <p className="text-base font-medium text-muted-foreground">Loading stats...</p>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-8 section-appear">
             {/* Stats Grid */}
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-foreground">Overview</h2>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card 
-                  className="hover:shadow-md transition-shadow duration-200 cursor-pointer border border-border bg-card group"
+                  className="cursor-pointer border border-border bg-card group elevated-card"
                   onClick={() => navigate('/tournaments')}
                 >
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -117,7 +161,7 @@ const Dashboard = () => {
                 </Card>
 
                 <Card 
-                  className="hover:shadow-md transition-shadow duration-200 cursor-pointer border border-border bg-card group"
+                  className="cursor-pointer border border-border bg-card group elevated-card"
                   onClick={() => navigate('/tournaments')}
                 >
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -133,8 +177,8 @@ const Dashboard = () => {
                 </Card>
 
                 <Card 
-                  className="hover:shadow-md transition-shadow duration-200 cursor-pointer border border-border bg-card group"
-                  onClick={() => navigate('/tournaments')}
+                  className="cursor-pointer border border-border bg-card group elevated-card"
+                  onClick={() => navigate('/matches')}
                 >
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-base font-medium text-muted-foreground">Matches</CardTitle>
@@ -150,7 +194,7 @@ const Dashboard = () => {
 
                 {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
                   <Card 
-                    className="hover:shadow-md transition-shadow duration-200 cursor-pointer border border-border bg-card group"
+                    className="cursor-pointer border border-border bg-card group elevated-card"
                     onClick={() => navigate('/children')}
                   >
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -173,7 +217,7 @@ const Dashboard = () => {
               <h2 className="text-2xl font-semibold mb-6 text-foreground">Quick Access</h2>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card 
-                  className="hover:shadow-md transition-shadow duration-200 cursor-pointer group border border-border bg-card"
+                  className="cursor-pointer group border border-border bg-card elevated-card"
                   onClick={() => navigate('/tournaments')}
                 >
                   <CardHeader>
@@ -192,7 +236,7 @@ const Dashboard = () => {
                 {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
                   <>
                     <Card 
-                      className="hover:shadow-md transition-shadow duration-200 cursor-pointer group border border-border bg-card"
+                      className="cursor-pointer group border border-border bg-card elevated-card"
                       onClick={() => navigate('/children')}
                     >
                       <CardHeader>
@@ -209,7 +253,7 @@ const Dashboard = () => {
                     </Card>
 
                     <Card 
-                      className="hover:shadow-md transition-shadow duration-200 cursor-pointer group border border-border bg-card"
+                      className="cursor-pointer group border border-border bg-card elevated-card"
                       onClick={() => navigate('/sessions')}
                     >
                       <CardHeader>
@@ -226,7 +270,7 @@ const Dashboard = () => {
                     </Card>
 
                     <Card 
-                      className="hover:shadow-md transition-shadow duration-200 cursor-pointer group border border-border bg-card"
+                      className="cursor-pointer group border border-border bg-card elevated-card"
                       onClick={() => navigate('/reports')}
                     >
                       <CardHeader>
@@ -246,53 +290,77 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Team Captain Section */}
-            {userRole === 'team_captain' && (
-              <TeamCaptainDashboard />
-            )}
+            {/* Trends and Streaks */}
+            <div className="grid gap-4 lg:grid-cols-5">
+              <Card className="border border-border bg-card lg:col-span-3">
+                <CardHeader>
+                  <CardTitle className="text-base">Weekly Trends</CardTitle>
+                  <CardDescription>Matches and player participation</CardDescription>
+                </CardHeader>
+                <CardContent className="h-72">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={trends} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis dataKey="label" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                      <YAxis tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                      <ReTooltip cursor={{ stroke: 'hsl(var(--border))' }} />
+                      <Line type="monotone" dataKey="matches" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="players" stroke="hsl(var(--secondary))" strokeWidth={2} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
 
-            {/* Coach Section */}
-            {userRole === 'coach' && (
-              <CoachDashboard />
-            )}
-
-            {/* Streak Leaderboard Section */}
-            {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-semibold flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    Streak Leaderboard
-                  </h2>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate('/streak-leaderboard')}
-                  >
-                    View All
-                  </Button>
+              {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
+                <div className="lg:col-span-2">
+                  <StreakLeaderboard limit={5} />
+                  <div className="flex justify-end mt-2">
+                    <Button variant="outline" size="sm" onClick={() => navigate('/streak-leaderboard')}>
+                      View All
+                    </Button>
+                  </div>
                 </div>
-                <StreakLeaderboard limit={5} />
-              </div>
-            )}
+              )}
+            </div>
 
-            {/* Coach Workload Section */}
-            {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
-              <div>
-                <CoachWorkloadDashboard />
-              </div>
-            )}
+            {/* Recent Activity and Alerts */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card className="border border-border bg-card">
+                <CardHeader>
+                  <CardTitle className="text-base">Recent Activity</CardTitle>
+                  <CardDescription>Latest match updates</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {recentMatches.length === 0 ? (
+                    <div className="text-sm text-muted-foreground">No recent matches.</div>
+                  ) : (
+                    <ul className="space-y-3">
+                      {recentMatches.map((m) => (
+                        <li key={m.id} className="flex items-center justify-between py-2 border-b last:border-b-0 border-border">
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-primary" />
+                            <span className="text-sm font-medium">Match {m.id.slice(0, 6)}</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground">{m.created_at ? new Date(m.created_at).toLocaleString() : '—'}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </CardContent>
+              </Card>
 
-            {/* Absence Alerts Section */}
-            {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
-              <div>
-                <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                  Absence Alerts
-                </h2>
-                <AbsenceAlerts limit={5} />
-              </div>
-            )}
+              {(userRole === 'admin' || userRole === 'coach' || userRole === 'program_manager') && (
+                <Card className="border border-border bg-card">
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-destructive" /> Absence Alerts</CardTitle>
+                    <CardDescription>Participants with attendance issues</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <AbsenceAlerts limit={5} />
+                  </CardContent>
+                </Card>
+              )}
+            </div>
 
             {/* Welcome Card */}
             <Card className="border border-border bg-card">

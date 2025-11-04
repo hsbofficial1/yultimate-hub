@@ -299,7 +299,12 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{childId ? 'Edit Child Profile' : 'Add New Child'}</DialogTitle>
+          <DialogTitle className="flex items-center justify-between">
+            <span>{childId ? 'Edit Child Profile' : 'Add New Child'}</span>
+            {childData?.active === false && (
+              <span className="text-xs px-2 py-1 rounded-md border bg-muted/50 text-muted-foreground">Inactive</span>
+            )}
+          </DialogTitle>
           <DialogDescription>
             {childId ? 'Update child profile information' : 'Enroll a child in the coaching program'}
           </DialogDescription>
@@ -321,18 +326,67 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
             <TabsContent value="profile" className="space-y-4">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  {/* Photo Upload */}
-                  <div className="flex items-center gap-4 pb-4 border-b">
-                    <Avatar className="h-20 w-20">
+                  {/* Profile Header */}
+                  <div className="flex items-center gap-4 p-4 border rounded-lg bg-muted/30">
+                    <Avatar className="h-20 w-20 border">
                       <AvatarImage src={childData?.photo_url || ''} alt={form.watch('name')} />
                       <AvatarFallback>
                         {form.watch('name')?.charAt(0)?.toUpperCase() || 'C'}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium mb-1">Profile Photo</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Full Name</FormLabel>
+                              <FormControl>
+                                <Input placeholder="John Doe" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="age"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Age</FormLabel>
+                              <FormControl>
+                                <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 0)} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="gender"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Gender</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="male">Male</SelectItem>
+                                  <SelectItem value="female">Female</SelectItem>
+                                  <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                       {childId && (
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2 mt-3">
                           <label>
                             <input
                               type="file"
@@ -341,7 +395,7 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
                               className="hidden"
                               disabled={uploading}
                             />
-                            <Button type="button" variant="outline" size="sm" disabled={uploading} asChild>
+                            <Button type="button" variant="outline" size="sm" disabled={uploading} asChild className="focus-ring">
                               <span>
                                 <Upload className="h-4 w-4 mr-2" />
                                 {uploading ? 'Uploading...' : 'Upload Photo'}
@@ -363,6 +417,7 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
                                   setChildData((prev) => prev ? { ...prev, photo_url: null } : null);
                                 }
                               }}
+                              className="focus-ring"
                             >
                               <X className="h-4 w-4 mr-2" />
                               Remove
@@ -377,12 +432,12 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="name"
+                      name="school"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Full Name</FormLabel>
+                          <FormLabel>School (Optional)</FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} />
+                            <Input placeholder="ABC School" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -390,16 +445,12 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
                     />
                     <FormField
                       control={form.control}
-                      name="age"
+                      name="community"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Age</FormLabel>
+                          <FormLabel>Community (Optional)</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                            />
+                            <Input placeholder="North Mumbai" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -430,34 +481,7 @@ export const ChildProfileDialog = ({ open, onOpenChange, childId, onSuccess }: C
                     )}
                   />
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="school"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>School (Optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="ABC School" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="community"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Community (Optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="North Mumbai" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  
 
                   {/* Parent Info */}
                   <div className="border-t pt-4">
