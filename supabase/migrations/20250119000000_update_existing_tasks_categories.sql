@@ -160,3 +160,66 @@ END $$;
 -- Drop the function after execution to clean up
 DROP FUNCTION IF EXISTS public.update_existing_tasks_categories();
 
+-- Add team_id and team_name columns to ceremony_speakers for team speeches
+ALTER TABLE public.ceremony_speakers
+ADD COLUMN IF NOT EXISTS team_id UUID REFERENCES public.teams(id) ON DELETE SET NULL,
+ADD COLUMN IF NOT EXISTS team_name TEXT;
+
+-- Create index for faster team lookups
+CREATE INDEX IF NOT EXISTS idx_ceremony_speakers_team_id ON public.ceremony_speakers(team_id);
+
+-- Tournament Rules Document Table (for full rules page)
+CREATE TABLE IF NOT EXISTS public.tournament_rules_documents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tournament_id UUID NOT NULL REFERENCES public.tournaments(id) ON DELETE CASCADE,
+    title TEXT NOT NULL DEFAULT 'All games are played by WFDF 2021 rules',
+    rules_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    UNIQUE(tournament_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_tournament_rules_documents_tournament_id ON public.tournament_rules_documents(tournament_id);
+
+ALTER TABLE public.tournament_rules_documents ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Anyone can view tournament rules documents" ON public.tournament_rules_documents;
+CREATE POLICY "Anyone can view tournament rules documents"
+    ON public.tournament_rules_documents FOR SELECT
+    USING (true);
+
+DROP POLICY IF EXISTS "Tournament personnel can manage rules documents" ON public.tournament_rules_documents;
+CREATE POLICY "Tournament personnel can manage rules documents"
+    ON public.tournament_rules_documents FOR ALL
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.tournaments t
+            WHERE t.id = tournament_id
+            AND (
+                t.created_by = auth.uid() OR
+                public.has_role(auth.uid(), 'admin') OR
+                public.has_role(auth.uid(), 'tournament_director')
+            )
+        )
+    );
+
+-- Trigger to update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_tournament_rules_documents_updated_at ON public.tournament_rules_documents;
+CREATE TRIGGER update_tournament_rules_documents_updated_at
+BEFORE UPDATE ON public.tournament_rules_documents
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-- Add seed_number column to teams table for tournament seeding
+ALTER TABLE public.teams
+ADD COLUMN IF NOT EXISTS seed_number INTEGER;
+
+CREATE INDEX IF NOT EXISTS idx_teams_seed_number ON public.teams(seed_number);

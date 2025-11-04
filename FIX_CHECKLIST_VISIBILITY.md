@@ -40,3 +40,6 @@ After running the migration:
 
 **Migration file:** `supabase/migrations/20250116000000_fix_checklist_rls.sql`
 
+
+
+

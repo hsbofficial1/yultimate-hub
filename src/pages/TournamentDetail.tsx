@@ -16,6 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Calendar, MapPin, Users, Play, UserPlus, Globe, Loader2, Download, CheckCircle2, XCircle, FileText, Filter, Trophy } from 'lucide-react';
 import { TournamentPlanningChecklist } from '@/components/TournamentPlanningChecklist';
 import { ClosingCeremonyPlanning } from '@/components/ClosingCeremonyPlanning';
+import { TournamentRules } from '@/components/TournamentRules';
+import { TournamentSeeding } from '@/components/TournamentSeeding';
+import { TournamentSchedule } from '@/components/TournamentSchedule';
 
 interface Tournament {
   id: string;
@@ -600,48 +603,7 @@ const TournamentDetail = () => {
           </TabsContent>
 
           <TabsContent value="matches" className="space-y-4 mt-6">
-            {matches.length === 0 ? (
-              <Card className="text-center py-12">
-                <CardContent>
-                  <Play className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-xl font-semibold mb-2">No matches scheduled</h3>
-                  <p className="text-muted-foreground">Matches will appear here once scheduled</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-4">
-                {matches.map((match) => (
-                  <Card
-                    key={match.id}
-                    className="cursor-pointer hover:shadow-lg transition-all"
-                    onClick={() => navigate(`/match/${match.id}`)}
-                  >
-                    <CardContent className="py-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="font-semibold">{match.team_a?.name || 'TBD'}</p>
-                          <p className="text-2xl font-bold">{match.team_a_score}</p>
-                        </div>
-                        <div className="text-center px-4">
-                          <Badge>{match.status}</Badge>
-                          <p className="text-sm text-muted-foreground mt-2">
-                            {new Date(match.scheduled_time).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </p>
-                          <p className="text-sm text-muted-foreground">Field {match.field}</p>
-                        </div>
-                        <div className="flex-1 text-right">
-                          <p className="font-semibold">{match.team_b?.name || 'TBD'}</p>
-                          <p className="text-2xl font-bold">{match.team_b_score}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            <TournamentSchedule tournamentId={id || ''} canManage={canManage} />
           </TabsContent>
 
           <TabsContent value="leaderboard" className="mt-6">
@@ -661,27 +623,11 @@ const TournamentDetail = () => {
           </TabsContent>
 
           <TabsContent value="pools" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Seeding & Pools</CardTitle>
-              </CardHeader>
-              <CardContent className="py-12 text-center">
-                <Globe className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">Seeding and pools feature coming soon</p>
-              </CardContent>
-            </Card>
+            <TournamentSeeding tournamentId={id || ''} canManage={canManage} />
           </TabsContent>
 
           <TabsContent value="rules" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Tournament Rules</CardTitle>
-              </CardHeader>
-              <CardContent className="py-12 text-center">
-                <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">Rules management feature coming soon</p>
-              </CardContent>
-            </Card>
+            <TournamentRules tournamentId={id || ''} canManage={canManage} />
           </TabsContent>
         </Tabs>
       </main>

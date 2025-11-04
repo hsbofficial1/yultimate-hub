@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/dialog';
 import {
   CheckCircle2,
-  Circle,
   Clock,
   Plus,
   AlertCircle,
@@ -29,6 +28,8 @@ import {
   Calendar,
   Mic,
   Loader2,
+  Gift,
+  Star,
 } from 'lucide-react';
 
 interface CeremonyEvent {
@@ -58,6 +59,8 @@ interface CeremonySpeaker {
   speaking_order: number | null;
   notes: string | null;
   confirmed: boolean;
+  team_id?: string | null;
+  team_name?: string | null;
 }
 
 interface CeremonyAward {
@@ -73,133 +76,15 @@ interface CeremonyAward {
   notes: string | null;
 }
 
+interface Team {
+  id: string;
+  name: string;
+}
+
 interface ClosingCeremonyPlanningProps {
   tournamentId: string;
   canManage: boolean;
 }
-
-const DEFAULT_CEREMONY_PLAN = {
-  sections: [
-    {
-      name: 'One brief with coaches to make sure everything goes well',
-      duration: null,
-      responsible: 'Lax/Cyril',
-      items: [
-        '- No disputes within coaches at any point. If any concern reach out to TD.',
-        '- Coaches should not interfere in calls. Let kids talk and make decisions.',
-        '- If by chance there is a long call spirit director can interfere if not present then coaches can',
-        '- Spirit sheet need to be filled ASAP',
-        '- If there is spirit score more or less than 2 right the reasons in detail',
-        '- During matches no calls go beyond 30 secs. If there is no solution at the time of call within 30 secs please contest/retract the call and talk about it in the circle',
-      ],
-    },
-    {
-      name: 'Seating Arrangement',
-      duration: null,
-      responsible: 'Lax',
-      items: [
-        '- Flex/Banner to be moved to the second field, facing towards the camera',
-        '- Players to be seated in 12 rows',
-        '- Chairs to be set up at the back for parents',
-      ],
-    },
-    {
-      name: 'Introduction',
-      duration: 10,
-      responsible: 'Lax/Cyril',
-      items: [
-        'Start with a thanks to:',
-        '- players for participating',
-        '- coaches for leading their team',
-        '- volunteers for helping us throughout the league and the UDAAN',
-        '- Supporters/Donors for supporting kids',
-      ],
-    },
-    {
-      name: 'Tournament Experience',
-      duration: 3,
-      responsible: 'Lax/Cyril',
-      items: [
-        '- How was this tournament',
-        '- Appreciate team for their effort',
-        '- Thanks to my team for helping me everytime',
-        '- Wish them for their future tournaments and studies',
-        '- Special Mention: Disc Artists, who helped in arranging shoes, etc.',
-      ],
-    },
-    {
-      name: 'Speeches - 1 response from each team',
-      duration: null,
-      responsible: 'Lax/Cyril',
-      items: [
-        'Participation certificate to be given after each speech. Duration to be 2-3 minute per team',
-        'Teams:',
-        '- Wild Hackers',
-        '- Garhi Ultimate',
-        '- Abhas Warriors',
-        '- Unique Ultimate',
-        '- The Fearless',
-        '- Throwing Aces',
-        '- Flying Wolf',
-        '- Mini Crazy',
-        '- Little Stars',
-        '- Seemapuri',
-        '- IIM Indore',
-        '- YU',
-      ],
-    },
-    {
-      name: "Parents' Response - 3 responses max",
-      duration: 5,
-      responsible: 'Open to everyone / RK/Benoy',
-      items: [
-        'Ask volunteers/donors if they want to share their experience',
-      ],
-    },
-    {
-      name: 'Special Mention',
-      duration: 2,
-      responsible: 'RK/Benoy',
-      items: [
-        'Thank the:',
-        '1. Venue partner - Jamia Sports Complex',
-        '2. Community sponsor - Ujjivan, Brahmos and Simply Sport',
-        '3. Disc partner - USHA Play',
-      ],
-    },
-    {
-      name: 'Medal Ceremony',
-      duration: null,
-      responsible: 'Lax/Cyril',
-      items: [
-        '- MSP male of the League - Dev Raj from The Fearless (Karm Marg)',
-        '- MSP female of the League - Arti Yadav from Flying Wolf',
-        '- Runners up of the league - Garhi Ultimate',
-        '- Spirit Award of the league',
-        '- Winners of the league by UJJIVAN - Wild Hackers',
-        '- MSP male of the UDAAN',
-        '- MSP female of the UDAAN',
-        '- Runners up of UDAAN',
-        '- Winners of UDAAN by Ankur Dhama',
-        '- Spirit Award of UDAAN',
-        '- Special Award for 23-24 Season - Studying / Updates',
-        '- Spirit Winners will play YU invitational',
-      ],
-    },
-    {
-      name: 'Pack-Up',
-      duration: null,
-      responsible: 'Lax/Cyril',
-      items: [
-        '- Coaches have to go home with their team',
-        '- Pack up team will manage to take the equipments back',
-        '- Lost and found by pack up team and Lax has to make sure of return of lost and found',
-        '- Lax/Cyril has to make sure that there is nothing left on the field and there is no littering on the ground',
-        '- Once equipments reach NGO - Need to write the return quantity of equipments',
-      ],
-    },
-  ],
-};
 
 export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCeremonyPlanningProps) => {
   const { toast } = useToast();
@@ -207,11 +92,12 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
   const [ceremonyEvent, setCeremonyEvent] = useState<CeremonyEvent | null>(null);
   const [speakers, setSpeakers] = useState<CeremonySpeaker[]>([]);
   const [awards, setAwards] = useState<CeremonyAward[]>([]);
-  const [sectionsExpanded, setSectionsExpanded] = useState<Record<string, boolean>>({});
-  const [checklistItems, setChecklistItems] = useState<Record<string, boolean>>({});
+  const [teams, setTeams] = useState<Team[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [speakerDialogOpen, setSpeakerDialogOpen] = useState(false);
   const [awardDialogOpen, setAwardDialogOpen] = useState(false);
+  const [editingSpeaker, setEditingSpeaker] = useState<CeremonySpeaker | null>(null);
+  const [editingAward, setEditingAward] = useState<CeremonyAward | null>(null);
 
   const [formData, setFormData] = useState({
     scheduled_date: '',
@@ -226,12 +112,13 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
   const [speakerFormData, setSpeakerFormData] = useState({
     speaker_name: '',
     speaker_title: '',
-    speaker_role: '',
+    speaker_role: 'team_speech',
     speech_topic: '',
-    allocated_minutes: '',
+    allocated_minutes: '3',
     speaking_order: '',
     notes: '',
     confirmed: false,
+    team_id: '',
   });
 
   const [awardFormData, setAwardFormData] = useState({
@@ -240,19 +127,36 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
     recipient_type: 'individual',
     recipient_name: '',
     presentor_name: '',
+    jersey_count: '1',
     notes: '',
   });
 
   useEffect(() => {
     fetchCeremonyData();
+    fetchTeams();
   }, [tournamentId]);
+
+  const fetchTeams = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('id, name')
+        .eq('tournament_id', tournamentId)
+        .in('status', ['approved', 'registered'])
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      setTeams(data || []);
+    } catch (error: any) {
+      console.error('Error fetching teams:', error);
+    }
+  };
 
   const fetchCeremonyData = async () => {
     try {
       setLoading(true);
 
-      // Fetch or create ceremony event
-      const { data: eventData, error: eventError } = await supabase
+      let { data: eventData, error: eventError } = await supabase
         .from('ceremony_events')
         .select('*')
         .eq('tournament_id', tournamentId)
@@ -262,32 +166,34 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
       if (eventError && eventError.code !== 'PGRST116') throw eventError;
 
       if (!eventData && canManage) {
-        // Create default closing ceremony event
         const { data: newEvent, error: createError } = await supabase
           .from('ceremony_events')
           .insert({
             tournament_id: tournamentId,
             event_name: 'Closing Ceremony',
             event_type: 'closing_ceremony',
-            description: 'Default closing ceremony plan for tournament',
+            description: 'Closing ceremony for tournament',
             status: 'planned',
           })
           .select()
           .single();
 
         if (createError) throw createError;
-        setCeremonyEvent(newEvent);
+        eventData = newEvent;
+      }
 
-        // Initialize checklist items
-        const items: Record<string, boolean> = {};
-        Object.keys(DEFAULT_CEREMONY_PLAN.sections).forEach((idx) => {
-          items[idx] = false;
-        });
-        setChecklistItems(items);
-      } else if (eventData) {
+      if (eventData) {
         setCeremonyEvent(eventData);
+        setFormData({
+          scheduled_date: eventData.scheduled_date || '',
+          scheduled_time: eventData.scheduled_time || '',
+          location: eventData.location || '',
+          duration_minutes: eventData.duration_minutes?.toString() || '',
+          description: eventData.description || '',
+          organizer_notes: eventData.organizer_notes || '',
+          status: eventData.status,
+        });
 
-        // Fetch speakers
         const { data: speakersData, error: speakersError } = await supabase
           .from('ceremony_speakers')
           .select('*')
@@ -297,7 +203,6 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
         if (speakersError) throw speakersError;
         setSpeakers(speakersData || []);
 
-        // Fetch awards
         const { data: awardsData, error: awardsError } = await supabase
           .from('ceremony_awards')
           .select('*')
@@ -306,13 +211,6 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
 
         if (awardsError) throw awardsError;
         setAwards(awardsData || []);
-
-        // Initialize checklist items
-        const items: Record<string, boolean> = {};
-        Object.keys(DEFAULT_CEREMONY_PLAN.sections).forEach((idx) => {
-          items[idx] = false;
-        });
-        setChecklistItems(items);
       }
     } catch (error: any) {
       console.error('Error fetching ceremony data:', error);
@@ -324,26 +222,6 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
     } finally {
       setLoading(false);
     }
-  };
-
-  const toggleSection = (sectionKey: string) => {
-    setSectionsExpanded((prev) => ({
-      ...prev,
-      [sectionKey]: !prev[sectionKey],
-    }));
-  };
-
-  const toggleChecklistItem = async (sectionKey: string) => {
-    if (!canManage || !ceremonyEvent) return;
-
-    const newValue = !checklistItems[sectionKey];
-    setChecklistItems((prev) => ({ ...prev, [sectionKey]: newValue }));
-
-    // TODO: Save checklist state to database
-    toast({
-      title: 'Checklist updated',
-      description: `Section marked as ${newValue ? 'complete' : 'incomplete'}`,
-    });
   };
 
   const handleSaveDetails = async () => {
@@ -384,25 +262,67 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
   const handleAddSpeaker = async () => {
     if (!ceremonyEvent || !canManage) return;
 
+    if (speakerFormData.speaker_role === 'parent_response') {
+      const parentCount = speakers.filter(s => s.speaker_role === 'parent_response').length;
+      if (parentCount >= 3 && !editingSpeaker) {
+        toast({
+          title: 'Limit reached',
+          description: 'Maximum 3 parent responses allowed',
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
+
+    if (speakerFormData.speaker_role === 'open_to_everyone') {
+      const openCount = speakers.filter(s => s.speaker_role === 'open_to_everyone').length;
+      if (openCount >= 5 && !editingSpeaker) {
+        toast({
+          title: 'Limit reached',
+          description: 'Maximum 5 open responses allowed',
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
+
     try {
-      const { error } = await supabase.from('ceremony_speakers').insert({
+      const speakerData: any = {
         ceremony_id: ceremonyEvent.id,
         speaker_name: speakerFormData.speaker_name,
         speaker_title: speakerFormData.speaker_title || null,
-        speaker_role: speakerFormData.speaker_role || null,
+        speaker_role: speakerFormData.speaker_role,
         speech_topic: speakerFormData.speech_topic || null,
         allocated_minutes: speakerFormData.allocated_minutes ? parseInt(speakerFormData.allocated_minutes) : null,
         speaking_order: speakerFormData.speaking_order ? parseInt(speakerFormData.speaking_order) : null,
         notes: speakerFormData.notes || null,
         confirmed: speakerFormData.confirmed,
-      });
+      };
 
-      if (error) throw error;
+      if (speakerFormData.speaker_role === 'team_speech' && speakerFormData.team_id) {
+        speakerData.team_id = speakerFormData.team_id;
+        const selectedTeam = teams.find(t => t.id === speakerFormData.team_id);
+        if (selectedTeam) {
+          speakerData.team_name = selectedTeam.name;
+        }
+      }
 
-      toast({
-        title: 'Success',
-        description: 'Speaker added',
-      });
+      if (editingSpeaker) {
+        const { error } = await supabase
+          .from('ceremony_speakers')
+          .update(speakerData)
+          .eq('id', editingSpeaker.id);
+
+        if (error) throw error;
+        toast({ title: 'Success', description: 'Speaker updated' });
+      } else {
+        const { error } = await supabase
+          .from('ceremony_speakers')
+          .insert(speakerData);
+
+        if (error) throw error;
+        toast({ title: 'Success', description: 'Speaker added' });
+      }
 
       setSpeakerDialogOpen(false);
       resetSpeakerForm();
@@ -420,22 +340,37 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
     if (!ceremonyEvent || !canManage) return;
 
     try {
-      const { error } = await supabase.from('ceremony_awards').insert({
+      let notes = awardFormData.notes || '';
+      if (awardFormData.jersey_count) {
+        notes = `Jerseys: ${awardFormData.jersey_count}${notes ? '\n' + notes : ''}`.trim();
+      }
+
+      const awardData: any = {
         ceremony_id: ceremonyEvent.id,
         award_category: awardFormData.award_category,
         award_description: awardFormData.award_description || null,
         recipient_type: awardFormData.recipient_type || null,
         recipient_name: awardFormData.recipient_name || null,
         presentor_name: awardFormData.presentor_name || null,
-        notes: awardFormData.notes || null,
-      });
+        notes: notes || null,
+      };
 
-      if (error) throw error;
+      if (editingAward) {
+        const { error } = await supabase
+          .from('ceremony_awards')
+          .update(awardData)
+          .eq('id', editingAward.id);
 
-      toast({
-        title: 'Success',
-        description: 'Award added',
-      });
+        if (error) throw error;
+        toast({ title: 'Success', description: 'Award updated' });
+      } else {
+        const { error } = await supabase
+          .from('ceremony_awards')
+          .insert(awardData);
+
+        if (error) throw error;
+        toast({ title: 'Success', description: 'Award added' });
+      }
 
       setAwardDialogOpen(false);
       resetAwardForm();
@@ -449,17 +384,49 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
     }
   };
 
+  const handleDeleteSpeaker = async (speakerId: string) => {
+    if (!canManage) return;
+    try {
+      const { error } = await supabase
+        .from('ceremony_speakers')
+        .delete()
+        .eq('id', speakerId);
+      if (error) throw error;
+      toast({ title: 'Success', description: 'Speaker removed' });
+      fetchCeremonyData();
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteAward = async (awardId: string) => {
+    if (!canManage) return;
+    try {
+      const { error } = await supabase
+        .from('ceremony_awards')
+        .delete()
+        .eq('id', awardId);
+      if (error) throw error;
+      toast({ title: 'Success', description: 'Award removed' });
+      fetchCeremonyData();
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
   const resetSpeakerForm = () => {
     setSpeakerFormData({
       speaker_name: '',
       speaker_title: '',
-      speaker_role: '',
+      speaker_role: 'team_speech',
       speech_topic: '',
-      allocated_minutes: '',
+      allocated_minutes: '3',
       speaking_order: '',
       notes: '',
       confirmed: false,
+      team_id: '',
     });
+    setEditingSpeaker(null);
   };
 
   const resetAwardForm = () => {
@@ -469,23 +436,52 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
       recipient_type: 'individual',
       recipient_name: '',
       presentor_name: '',
+      jersey_count: '1',
       notes: '',
     });
+    setEditingAward(null);
   };
 
-  const openEditDialog = () => {
-    if (!ceremonyEvent) return;
-
-    setFormData({
-      scheduled_date: ceremonyEvent.scheduled_date || '',
-      scheduled_time: ceremonyEvent.scheduled_time || '',
-      location: ceremonyEvent.location || '',
-      duration_minutes: ceremonyEvent.duration_minutes?.toString() || '',
-      description: ceremonyEvent.description || '',
-      organizer_notes: ceremonyEvent.organizer_notes || '',
-      status: ceremonyEvent.status,
+  const openEditSpeakerDialog = (speaker: CeremonySpeaker) => {
+    setEditingSpeaker(speaker);
+    setSpeakerFormData({
+      speaker_name: speaker.speaker_name,
+      speaker_title: speaker.speaker_title || '',
+      speaker_role: speaker.speaker_role || 'team_speech',
+      speech_topic: speaker.speech_topic || '',
+      allocated_minutes: speaker.allocated_minutes?.toString() || '3',
+      speaking_order: speaker.speaking_order?.toString() || '',
+      notes: speaker.notes || '',
+      confirmed: speaker.confirmed,
+      team_id: speaker.team_id || '',
     });
-    setDialogOpen(true);
+    setSpeakerDialogOpen(true);
+  };
+
+  const openEditAwardDialog = (award: CeremonyAward) => {
+    setEditingAward(award);
+    let jerseyCount = '1';
+    if (award.notes && award.notes.includes('Jerseys:')) {
+      const match = award.notes.match(/Jerseys:\s*(\d+)/);
+      if (match) jerseyCount = match[1];
+    }
+    
+    setAwardFormData({
+      award_category: award.award_category,
+      award_description: award.award_description || '',
+      recipient_type: award.recipient_type || 'individual',
+      recipient_name: award.recipient_name || '',
+      presentor_name: award.presentor_name || '',
+      jersey_count: jerseyCount,
+      notes: award.notes?.replace(/Jerseys:\s*\d+\n?/i, '').trim() || '',
+    });
+    setAwardDialogOpen(true);
+  };
+
+  const openAddSpeakerDialog = (role: string = 'team_speech') => {
+    resetSpeakerForm();
+    setSpeakerFormData(prev => ({ ...prev, speaker_role: role }));
+    setSpeakerDialogOpen(true);
   };
 
   if (loading) {
@@ -505,38 +501,39 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
         <CardContent className="py-12 text-center">
           <AlertCircle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <p className="text-muted-foreground">No closing ceremony configured</p>
+          {canManage && (
+            <Button className="mt-4" onClick={fetchCeremonyData}>
+              Initialize Ceremony
+            </Button>
+          )}
         </CardContent>
       </Card>
     );
   }
 
+  const teamSpeeches = speakers.filter(s => s.speaker_role === 'team_speech');
+  const parentResponses = speakers.filter(s => s.speaker_role === 'parent_response');
+  const openToEveryone = speakers.filter(s => s.speaker_role === 'open_to_everyone');
+  const specialMentions = speakers.filter(s => s.speaker_role === 'special_mention');
+  const teamsWithoutSpeech = teams.filter(team => 
+    !teamSpeeches.some(speech => speech.team_id === team.id)
+  );
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-2xl font-bold">Closing Ceremony Planning</h3>
-          <p className="text-muted-foreground">Default closing ceremony checklist</p>
+          <h3 className="text-2xl font-bold">Ceremony Planning</h3>
+          <p className="text-muted-foreground">Manage closing ceremony schedule and activities</p>
         </div>
         {canManage && (
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={openEditDialog}>
-              <Edit2 className="h-4 w-4 mr-2" />
-              Edit Details
-            </Button>
-            <Button variant="outline" onClick={() => setSpeakerDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Speaker
-            </Button>
-            <Button variant="outline" onClick={() => setAwardDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Award
-            </Button>
-          </div>
+          <Button variant="outline" onClick={() => setDialogOpen(true)}>
+            <Edit2 className="h-4 w-4 mr-2" />
+            Edit Details
+          </Button>
         )}
       </div>
 
-      {/* Ceremony Overview */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -575,153 +572,344 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
               <Badge className="mt-1">{ceremonyEvent.status}</Badge>
             </div>
           </div>
-          {ceremonyEvent.organizer_notes && (
-            <div className="mt-4">
-              <p className="text-sm font-medium text-muted-foreground">Organizer Notes</p>
-              <p className="text-base mt-1">{ceremonyEvent.organizer_notes}</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Mic className="h-5 w-5" />
+              Team Speeches
+            </CardTitle>
+            {canManage && (
+              <Button variant="outline" size="sm" onClick={() => openAddSpeakerDialog('team_speech')}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Team Speech
+              </Button>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">
+            1 response from each participating team. Participation certificate given after each speech (3 minutes each)
+          </p>
+        </CardHeader>
+        <CardContent>
+          {teamSpeeches.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Mic className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No team speeches scheduled yet</p>
+              {canManage && teams.length > 0 && (
+                <p className="text-xs mt-2">{teams.length} team(s) available for speeches</p>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {teamSpeeches.map((speaker) => (
+                <div key={speaker.id} className="border rounded-lg p-4 flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h5 className="font-medium">{speaker.speaker_name}</h5>
+                      {speaker.team_name && <Badge variant="secondary">{speaker.team_name}</Badge>}
+                      {speaker.confirmed && (
+                        <Badge variant="default" className="text-xs">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Confirmed
+                        </Badge>
+                      )}
+                    </div>
+                    {speaker.speech_topic && (
+                      <p className="text-sm text-muted-foreground mt-1">{speaker.speech_topic}</p>
+                    )}
+                    <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                      {speaker.allocated_minutes && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {speaker.allocated_minutes} min
+                        </span>
+                      )}
+                      {speaker.speaking_order && <span>Order: #{speaker.speaking_order}</span>}
+                    </div>
+                  </div>
+                  {canManage && (
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => openEditSpeakerDialog(speaker)}>
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteSpeaker(speaker.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Default Ceremony Checklist */}
       <Card>
         <CardHeader>
-          <CardTitle>Ceremony Checklist</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Parents' Response
+            </CardTitle>
+            {canManage && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => openAddSpeakerDialog('parent_response')}
+                disabled={parentResponses.length >= 3}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Parent ({parentResponses.length}/3)
+              </Button>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">
+            Maximum 3 responses from parents (5 minutes total)
+          </p>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {DEFAULT_CEREMONY_PLAN.sections.map((section, idx) => (
-            <div key={idx} className="border rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                {canManage && (
-                  <div className="pt-1">
-                    <Checkbox
-                      checked={checklistItems[idx.toString()]}
-                      onCheckedChange={() => toggleChecklistItem(idx.toString())}
-                    />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg">{section.name}</h4>
-                      {section.duration && (
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {section.duration} min
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Users className="h-4 w-4" />
-                            {section.responsible}
-                          </span>
-                        </div>
-                      )}
-                      {!section.duration && (
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                          <span className="flex items-center gap-1">
-                            <Users className="h-4 w-4" />
-                            {section.responsible}
-                          </span>
-                        </div>
+        <CardContent>
+          {parentResponses.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No parent responses scheduled</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {parentResponses.map((speaker) => (
+                <div key={speaker.id} className="border rounded-lg p-4 flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h5 className="font-medium">{speaker.speaker_name}</h5>
+                      {speaker.confirmed && (
+                        <Badge variant="default" className="text-xs">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Confirmed
+                        </Badge>
                       )}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleSection(idx.toString())}
-                    >
-                      {sectionsExpanded[idx.toString()] ? 'Collapse' : 'Expand'}
-                    </Button>
+                    {speaker.speech_topic && (
+                      <p className="text-sm text-muted-foreground mt-1">{speaker.speech_topic}</p>
+                    )}
                   </div>
-                  {sectionsExpanded[idx.toString()] && (
-                    <div className="mt-3 space-y-2">
-                      {section.items.map((item, itemIdx) => (
-                        <p key={itemIdx} className="text-sm text-muted-foreground pl-4">
-                          {item}
-                        </p>
-                      ))}
+                  {canManage && (
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => openEditSpeakerDialog(speaker)}>
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteSpeaker(speaker.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </div>
                   )}
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </CardContent>
       </Card>
 
-      {/* Speakers List */}
-      {speakers.length > 0 && (
-        <Card>
-          <CardHeader>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Mic className="h-5 w-5" />
-              Speakers
+              <Star className="h-5 w-5" />
+              Open to Everyone
             </CardTitle>
-          </CardHeader>
-          <CardContent>
+            {canManage && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => openAddSpeakerDialog('open_to_everyone')}
+                disabled={openToEveryone.length >= 5}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Speaker ({openToEveryone.length}/5)
+              </Button>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">
+            Maximum 5 responses from volunteers or donors (5 minutes total)
+          </p>
+        </CardHeader>
+        <CardContent>
+          {openToEveryone.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Star className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No open speakers scheduled</p>
+            </div>
+          ) : (
             <div className="space-y-3">
-              {speakers.map((speaker) => (
-                <div key={speaker.id} className="border rounded-lg p-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h5 className="font-medium">{speaker.speaker_name}</h5>
-                        {speaker.confirmed && (
-                          <Badge variant="default" className="text-xs">Confirmed</Badge>
-                        )}
-                      </div>
-                      {speaker.speaker_title && (
-                        <p className="text-sm text-muted-foreground">{speaker.speaker_title}</p>
-                      )}
-                      {speaker.speech_topic && (
-                        <p className="text-sm mt-1">{speaker.speech_topic}</p>
-                      )}
-                      {speaker.allocated_minutes && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Duration: {speaker.allocated_minutes} minutes
-                        </p>
+              {openToEveryone.map((speaker) => (
+                <div key={speaker.id} className="border rounded-lg p-4 flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h5 className="font-medium">{speaker.speaker_name}</h5>
+                      {speaker.speaker_title && <Badge variant="secondary">{speaker.speaker_title}</Badge>}
+                      {speaker.confirmed && (
+                        <Badge variant="default" className="text-xs">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Confirmed
+                        </Badge>
                       )}
                     </div>
+                    {speaker.speech_topic && (
+                      <p className="text-sm text-muted-foreground mt-1">{speaker.speech_topic}</p>
+                    )}
                   </div>
+                  {canManage && (
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => openEditSpeakerDialog(speaker)}>
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteSpeaker(speaker.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Awards List */}
-      {awards.length > 0 && (
-        <Card>
-          <CardHeader>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Gift className="h-5 w-5" />
+              Special Mention
+            </CardTitle>
+            {canManage && (
+              <Button variant="outline" size="sm" onClick={() => openAddSpeakerDialog('special_mention')}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Mention
+              </Button>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">
+            Thank venue partners and community sponsors (2 minutes)
+          </p>
+        </CardHeader>
+        <CardContent>
+          {specialMentions.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Gift className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No special mentions scheduled</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {specialMentions.map((speaker) => (
+                <div key={speaker.id} className="border rounded-lg p-4 flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h5 className="font-medium">{speaker.speaker_name}</h5>
+                      {speaker.speaker_title && <Badge variant="secondary">{speaker.speaker_title}</Badge>}
+                    </div>
+                    {speaker.speech_topic && (
+                      <p className="text-sm text-muted-foreground mt-1">{speaker.speech_topic}</p>
+                    )}
+                    {speaker.notes && <p className="text-sm mt-2">{speaker.notes}</p>}
+                  </div>
+                  {canManage && (
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => openEditSpeakerDialog(speaker)}>
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteSpeaker(speaker.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Trophy className="h-5 w-5" />
-              Awards
+              Medal Ceremony
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {awards.map((award) => (
-                <div key={award.id} className="border rounded-lg p-3">
-                  <h5 className="font-medium">{award.award_category}</h5>
-                  {award.recipient_name && (
-                    <p className="text-sm text-muted-foreground">Recipient: {award.recipient_name}</p>
-                  )}
-                  {award.award_description && (
-                    <p className="text-sm mt-1">{award.award_description}</p>
-                  )}
-                  {award.presentor_name && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Presentor: {award.presentor_name}
-                    </p>
-                  )}
-                </div>
-              ))}
+            {canManage && (
+              <Button variant="outline" size="sm" onClick={() => setAwardDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Award
+              </Button>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">
+            Awards and recognitions with jersey counts
+          </p>
+        </CardHeader>
+        <CardContent>
+          {awards.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Trophy className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No awards scheduled yet</p>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="space-y-3">
+              {awards.map((award) => {
+                let jerseyCount = null;
+                if (award.notes && award.notes.includes('Jerseys:')) {
+                  const match = award.notes.match(/Jerseys:\s*(\d+)/);
+                  if (match) jerseyCount = parseInt(match[1]);
+                }
+
+                return (
+                  <div key={award.id} className="border rounded-lg p-4 flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h5 className="font-medium">{award.award_category}</h5>
+                        {jerseyCount !== null && (
+                          <Badge variant="secondary">
+                            <Gift className="h-3 w-3 mr-1" />
+                            {jerseyCount} Jersey{jerseyCount !== 1 ? 's' : ''}
+                          </Badge>
+                        )}
+                      </div>
+                      {award.recipient_name && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Winner: <span className="font-medium">{award.recipient_name}</span>
+                        </p>
+                      )}
+                      {award.award_description && (
+                        <p className="text-sm mt-1">{award.award_description}</p>
+                      )}
+                      {award.presentor_name && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Presented by: {award.presentor_name}
+                        </p>
+                      )}
+                      {award.notes && !award.notes.includes('Jerseys:') && (
+                        <p className="text-xs text-muted-foreground mt-2">{award.notes}</p>
+                      )}
+                    </div>
+                    {canManage && (
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => openEditAwardDialog(award)}>
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDeleteAward(award.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Edit Ceremony Details Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -810,13 +998,63 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
         </DialogContent>
       </Dialog>
 
-      {/* Add Speaker Dialog */}
-      <Dialog open={speakerDialogOpen} onOpenChange={setSpeakerDialogOpen}>
-        <DialogContent className="max-w-2xl">
+      {/* Add/Edit Speaker Dialog */}
+      <Dialog open={speakerDialogOpen} onOpenChange={(open) => {
+        setSpeakerDialogOpen(open);
+        if (!open) resetSpeakerForm();
+      }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add Speaker</DialogTitle>
+            <DialogTitle>{editingSpeaker ? 'Edit Speaker' : 'Add Speaker'}</DialogTitle>
+            <DialogDescription>
+              {speakerFormData.speaker_role === 'team_speech' && 'Add a team representative speech'}
+              {speakerFormData.speaker_role === 'parent_response' && 'Add a parent response (max 3)'}
+              {speakerFormData.speaker_role === 'open_to_everyone' && 'Add an open speaker (max 5)'}
+              {speakerFormData.speaker_role === 'special_mention' && 'Add a special mention'}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Speaker Role *</label>
+              <Select 
+                value={speakerFormData.speaker_role} 
+                onValueChange={(value) => setSpeakerFormData({ ...speakerFormData, speaker_role: value, team_id: '' })}
+                disabled={!!editingSpeaker}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="team_speech">Team Speech</SelectItem>
+                  <SelectItem value="parent_response">Parent Response</SelectItem>
+                  <SelectItem value="open_to_everyone">Open to Everyone</SelectItem>
+                  <SelectItem value="special_mention">Special Mention</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {speakerFormData.speaker_role === 'team_speech' && (
+              <div>
+                <label className="text-sm font-medium mb-2 block">Team *</label>
+                <Select 
+                  value={speakerFormData.team_id} 
+                  onValueChange={(value) => setSpeakerFormData({ ...speakerFormData, team_id: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a team" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teams.map((team) => (
+                      <SelectItem key={team.id} value={team.id}>
+                        {team.name}
+                        {teamSpeeches.some(s => s.team_id === team.id && s.id !== editingSpeaker?.id) && ' (Already assigned)'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div>
               <label className="text-sm font-medium mb-2 block">Speaker Name *</label>
               <Input
@@ -825,30 +1063,27 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
                 placeholder="Enter speaker name"
               />
             </div>
+
+            {speakerFormData.speaker_role !== 'team_speech' && (
+              <div>
+                <label className="text-sm font-medium mb-2 block">Title</label>
+                <Input
+                  value={speakerFormData.speaker_title}
+                  onChange={(e) => setSpeakerFormData({ ...speakerFormData, speaker_title: e.target.value })}
+                  placeholder="e.g., Parent, Volunteer, Donor"
+                />
+              </div>
+            )}
+
             <div>
-              <label className="text-sm font-medium mb-2 block">Title</label>
-              <Input
-                value={speakerFormData.speaker_title}
-                onChange={(e) => setSpeakerFormData({ ...speakerFormData, speaker_title: e.target.value })}
-                placeholder="e.g., CEO, Founder"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Role</label>
-              <Input
-                value={speakerFormData.speaker_role}
-                onChange={(e) => setSpeakerFormData({ ...speakerFormData, speaker_role: e.target.value })}
-                placeholder="e.g., Guest Speaker"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Speech Topic</label>
+              <label className="text-sm font-medium mb-2 block">Speech Topic / Mention</label>
               <Input
                 value={speakerFormData.speech_topic}
                 onChange={(e) => setSpeakerFormData({ ...speakerFormData, speech_topic: e.target.value })}
-                placeholder="Topic of the speech"
+                placeholder="Topic or mention details"
               />
             </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Allocated Minutes</label>
@@ -856,7 +1091,7 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
                   type="number"
                   value={speakerFormData.allocated_minutes}
                   onChange={(e) => setSpeakerFormData({ ...speakerFormData, allocated_minutes: e.target.value })}
-                  placeholder="e.g., 5"
+                  placeholder="e.g., 3"
                 />
               </div>
               <div>
@@ -869,6 +1104,7 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
                 />
               </div>
             </div>
+
             <div>
               <label className="text-sm font-medium mb-2 block">Notes</label>
               <Textarea
@@ -878,6 +1114,7 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
                 placeholder="Additional notes..."
               />
             </div>
+
             <div className="flex items-center gap-2">
               <Checkbox
                 checked={speakerFormData.confirmed}
@@ -887,19 +1124,30 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setSpeakerDialogOpen(false)}>
+            <Button variant="outline" onClick={() => {
+              setSpeakerDialogOpen(false);
+              resetSpeakerForm();
+            }}>
               Cancel
             </Button>
-            <Button onClick={handleAddSpeaker}>Add Speaker</Button>
+            <Button onClick={handleAddSpeaker}>
+              {editingSpeaker ? 'Update Speaker' : 'Add Speaker'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Add Award Dialog */}
-      <Dialog open={awardDialogOpen} onOpenChange={setAwardDialogOpen}>
-        <DialogContent className="max-w-2xl">
+      {/* Add/Edit Award Dialog */}
+      <Dialog open={awardDialogOpen} onOpenChange={(open) => {
+        setAwardDialogOpen(open);
+        if (!open) resetAwardForm();
+      }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add Award</DialogTitle>
+            <DialogTitle>{editingAward ? 'Edit Award' : 'Add Award'}</DialogTitle>
+            <DialogDescription>
+              Add an award to be presented during the medal ceremony
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
@@ -910,6 +1158,7 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
                 placeholder="e.g., MSP male of the League"
               />
             </div>
+
             <div>
               <label className="text-sm font-medium mb-2 block">Description</label>
               <Textarea
@@ -919,6 +1168,7 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
                 placeholder="Award description..."
               />
             </div>
+
             <div>
               <label className="text-sm font-medium mb-2 block">Recipient Type</label>
               <Select
@@ -935,6 +1185,7 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
                 </SelectContent>
               </Select>
             </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Recipient Name</label>
@@ -945,14 +1196,26 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Presentor Name</label>
+                <label className="text-sm font-medium mb-2 block">Number of Jerseys</label>
                 <Input
-                  value={awardFormData.presentor_name}
-                  onChange={(e) => setAwardFormData({ ...awardFormData, presentor_name: e.target.value })}
-                  placeholder="e.g., Event Sponsor"
+                  type="number"
+                  value={awardFormData.jersey_count}
+                  onChange={(e) => setAwardFormData({ ...awardFormData, jersey_count: e.target.value })}
+                  placeholder="e.g., 1"
+                  min="0"
                 />
               </div>
             </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Presentor Name</label>
+              <Input
+                value={awardFormData.presentor_name}
+                onChange={(e) => setAwardFormData({ ...awardFormData, presentor_name: e.target.value })}
+                placeholder="e.g., Event Sponsor"
+              />
+            </div>
+
             <div>
               <label className="text-sm font-medium mb-2 block">Notes</label>
               <Textarea
@@ -964,14 +1227,18 @@ export const ClosingCeremonyPlanning = ({ tournamentId, canManage }: ClosingCere
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAwardDialogOpen(false)}>
+            <Button variant="outline" onClick={() => {
+              setAwardDialogOpen(false);
+              resetAwardForm();
+            }}>
               Cancel
             </Button>
-            <Button onClick={handleAddAward}>Add Award</Button>
+            <Button onClick={handleAddAward}>
+              {editingAward ? 'Update Award' : 'Add Award'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   );
 };
-

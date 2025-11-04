@@ -264,3 +264,6 @@ python scripts/import_checklist_items.py \
 
 Good luck with your tournament! 🎉
 
+
+
+

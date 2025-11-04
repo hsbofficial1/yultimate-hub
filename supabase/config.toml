@@ -1,6 +1,15 @@
-project_id = "febvczcdqmpmvhcrkahj"
+project_id = "glktlcjpcepphphgaqrc"
 
 [auth]
 # Disable email confirmation requirement
 enable_signup = true
-enable_confirmations = false
+
+# Note: JWT token expiration (15min access, 7-day refresh) is configured
+# in Supabase Dashboard under Settings > API > JWT Settings
+# Default Supabase configuration:
+# - Access token: 1 hour (configurable in dashboard)
+# - Refresh token: 7 days (default)
+# - autoRefreshToken: enabled in src/integrations/supabase/client.ts
+
+# Note: Password reset is enabled by default in Supabase
+# Configure email templates in Supabase Dashboard under Authentication > Email Templates
