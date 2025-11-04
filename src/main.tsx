@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "./styles/ux.css";
 import { attendanceSync } from "./lib/attendanceSync";
 import { offlineStorage } from "./lib/offlineStorage";
 import { milestoneNotifications } from "./lib/milestoneNotifications";
@@ -8,7 +9,7 @@ import { milestoneNotifications } from "./lib/milestoneNotifications";
 // Initialize offline storage and sync service
 offlineStorage.init().then(() => {
   // Sync service will auto-initialize and start syncing
-  console.log('Offline storage initialized');
+  console.log("Offline storage initialized");
 });
 
 // Periodically try to sync (every 30 seconds)

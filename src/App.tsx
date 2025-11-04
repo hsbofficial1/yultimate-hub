@@ -12,12 +12,15 @@ import TournamentDetail from "./pages/TournamentDetail";
 import MatchScoring from "./pages/MatchScoring";
 import TeamRegistration from "./pages/TeamRegistration";
 import Reports from "./pages/Reports";
+import Matches from "./pages/Matches";
+import Profile from "./pages/Profile";
 import Children from "./pages/Children";
 import Sessions from "./pages/Sessions";
 import SessionAttendanceEnhanced from "./pages/SessionAttendanceEnhanced";
 import Leaderboards from "./pages/Leaderboards";
 import StreakLeaderboardPage from "./pages/StreakLeaderboardPage";
 import NotFound from "./pages/NotFound";
+import RoleDashboard from "./pages/RoleDashboard";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +33,22 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route
+              path="/dashboard/captain"
+              element={
+                <ProtectedRoute>
+                  <RoleDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/player"
+              element={
+                <ProtectedRoute>
+                  <RoleDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/"
               element={
@@ -79,6 +98,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <StreakLeaderboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/matches"
+              element={
+                <ProtectedRoute>
+                  <Matches />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />
